@@ -791,7 +791,7 @@ metaseqr <- function(
     annotation=c("download","embedded"),
     gene.file=NULL,
     org=c("hg18","hg19","hg38","mm9","mm10","rn5","rn6","dm3","dm6",
-        "danrer7","pantro4","susscr3","tair10","equcab2","custom"),
+          "danrer7","pantro4","susscr3","tair10","equcab2","custom"),
     refdb=c("ensembl","ucsc","refseq"),
     trans.level=c("gene","transcript","exon"),
     count.type=c("gene","exon","utr"),
@@ -820,9 +820,9 @@ metaseqr <- function(
         ),
         biotype=get.defaults("biotype.filter",org[1]),
         presence=list(
-			frac=0.25,
-			min.count=10,
-			per.condition=FALSE
+            frac=0.25,
+            min.count=10,
+            per.condition=FALSE
         )
     ),
     when.apply.filter=c("postnorm","prenorm"),
@@ -832,8 +832,8 @@ metaseqr <- function(
     stat.args=NULL,
     adjust.method=sort(c(p.adjust.methods,"qvalue")), # Brings BH first which is the default
     meta.p=if (length(statistics)>1) c("simes","bonferroni","fisher",
-        "dperm.min","dperm.max","dperm.weight","fperm","whitlock","minp","maxp",
-        "weight","pandora","none") else "none",
+                                       "dperm.min","dperm.max","dperm.weight","fperm","whitlock","minp","maxp",
+                                       "weight","pandora","none") else "none",
     weight=rep(1/length(statistics),length(statistics)),
     nperm=10000,
     reprod=TRUE,
@@ -850,7 +850,7 @@ metaseqr <- function(
     out.list=FALSE,
     export.where=NA, # An output directory for the project
     export.what=c("annotation","p.value","adj.p.value","meta.p.value",
-        "adj.meta.p.value","fold.change","stats","counts","flags"),
+                  "adj.meta.p.value","fold.change","stats","counts","flags"),
     export.scale=c("natural","log2","log10","vst","rpgm"),
     export.values=c("raw","normalized"),
     export.stats=c("mean","median","sd","mad","cv","rcv"),
@@ -871,16 +871,16 @@ metaseqr <- function(
     from.raw <- from.previous <- FALSE
     if (missing(counts) && (missing(sample.list) || is.list(sample.list)))
         stop("You must provide a file with genomic region (gene, exon, etc.) ",
-            "counts or an input targets file to create input from! If the ",
-            "counts file is missing, sample.list cannot be missing or it must ",
-            "be a targets file with at least three columns! See the ",
-            "read.targets function. counts may also be a gene model list ",
-            "(see the documentation)")
+             "counts or an input targets file to create input from! If the ",
+             "counts file is missing, sample.list cannot be missing or it must ",
+             "be a targets file with at least three columns! See the ",
+             "read.targets function. counts may also be a gene model list ",
+             "(see the documentation)")
     if (!missing(counts) && !missing(sample.list) && is.character(counts) 
         && file.exists(counts) && length(grep(".RData$",counts))>0) 
     {
         warning("When restoring a previous analysis, sample.list argument is ",
-            "not necessary! Ignoring...")
+                "not necessary! Ignoring...")
         from.previous <- TRUE
         tmp.env <- new.env()
         disp("Restoring previous analysis from ",basename(counts))
@@ -899,10 +899,10 @@ metaseqr <- function(
         count.type <- tmp.env$count.type
     }
     if (missing(sample.list) && !from.previous || (!is.list(sample.list) &&
-        !file.exists(sample.list)))
+                                                   !file.exists(sample.list)))
         stop("You must provide a list with condition names and sample names ",
-            "(same as in the counts file) or an input file to create the ",
-            "sample list from!")
+             "(same as in the counts file) or an input file to create the ",
+             "sample list from!")
     if (!missing(sample.list) && !is.list(sample.list) 
         && file.exists(sample.list) && !missing(counts) && !from.previous)
         sample.list <- make.sample.list(sample.list)
@@ -917,10 +917,10 @@ metaseqr <- function(
             file.type <- the.list$type
         if (is.null(file.type))
             stop(paste("The type of the input files could not be recognized!",
-                "Please specify (BAM or BED)..."))
+                       "Please specify (BAM or BED)..."))
         from.raw <- TRUE
     }
-
+    
     # Initialize environmental variables
     HOME <- system.file(package="metaseqR")
     TEMPLATE <- HOME
@@ -934,11 +934,11 @@ metaseqr <- function(
     assign("VERBOSE",verbose,envir=meta.env)
     if (run.log)
         logger <- create.logger(logfile=file.path(PROJECT.PATH$logs,
-            "metaseqr_run.log"),level=2,logformat="%d %c %m")
+                                                  "metaseqr_run.log"),level=2,logformat="%d %c %m")
     else
         logger <- NULL
     assign("LOGGER",logger,envir=meta.env)
-
+    
     # Check if there are any mispelled or invalid parameters and throw a warning
     check.main.args(as.list(match.call()))
     
@@ -962,7 +962,7 @@ metaseqr <- function(
         samples <- unlist(sample.list,use.names=FALSE)
         if (length(which(!is.na(match(samples,aline)))) != length(samples))
             stopwrap("The sample names provided in the counts file/list do ",
-                "not match with those of the sample.list!")
+                     "not match with those of the sample.list!")
     }
     
     # If exclude list given, check that it's a subset of sample.list, otherwise
@@ -974,11 +974,11 @@ metaseqr <- function(
         if (length(intersect(sl,el)) != length(el))
         {
             warnwrap("Some samples in exclude.list do not match those in the ",
-                "initial sample.list! Ignoring...",now=TRUE)
+                     "initial sample.list! Ignoring...",now=TRUE)
             exclude.list <- NULL
         }
     }   
-
+    
     file.type <- tolower(file.type[1])
     annotation <- tolower(annotation[1])
     org <- tolower(org[1])
@@ -1019,80 +1019,80 @@ metaseqr <- function(
             counts.name <- "imported custom data frame"
         }
     }
-
+    
     if (is.list(counts) && !is.data.frame(counts) && count.type=="exon" 
-		&& annotation=="embedded")
+        && annotation=="embedded")
     {
         warnwrap("annotation cannot be \"embedded\" when importing a stored ",
-            "gene model! Switching to \"download\"...")
+                 "gene model! Switching to \"download\"...")
         annotation <- "download"
     }
-
+    
     if (meta.p %in% c("weight","pandora","dperm.weight") && 
         abs(1-sum(weight))>1e-5)
         stopwrap("The weights given for p-value combination should sum to 1!")
-
+    
     check.text.args("file.type",file.type,c("auto","sam","bam","bed"),
-        multiarg=FALSE)
+                    multiarg=FALSE)
     check.text.args("annotation",annotation,c("embedded","download"),
-        multiarg=FALSE)
+                    multiarg=FALSE)
     check.text.args("org",org,c("hg18","hg19","hg38","mm9","mm10","rn5","rn6",
-        "dm3","dm6","danrer7","pantro4","susscr3","tair10","equcab2","custom"),
-        multiarg=FALSE)
+                                "dm3","dm6","danrer7","pantro4","susscr3","tair10","equcab2","custom"),
+                    multiarg=FALSE)
     check.text.args("refdb",refdb,c("ensembl","ucsc","refseq"),multiarg=FALSE)
     check.text.args("trans.level",trans.level,c("gene","transcript","exon"),
-		multiarg=FALSE)
+                    multiarg=FALSE)
     check.text.args("count.type",count.type,c("gene","exon","utr"),
-		multiarg=FALSE)
+                    multiarg=FALSE)
     check.text.args("when.apply.filter",when.apply.filter,c("postnorm",
-        "prenorm"),multiarg=FALSE)
+                                                            "prenorm"),multiarg=FALSE)
     check.text.args("normalization",normalization,c("edaseq","deseq","edger",
-        "noiseq","nbpseq","each","none"),multiarg=FALSE)
+                                                    "noiseq","nbpseq","each","none"),multiarg=FALSE)
     check.text.args("statistics",statistics,c("deseq","edger","noiseq","bayseq",
-        "limma","nbpseq"),multiarg=TRUE)
+                                              "limma","nbpseq"),multiarg=TRUE)
     check.text.args("meta.p",meta.p,c("simes","bonferroni","fisher","dperm.min",
-        "dperm.max","dperm.weight","fperm","whitlock","minp","maxp","weight",
-        "pandora","none"),multiarg=FALSE)
+                                      "dperm.max","dperm.weight","fperm","whitlock","minp","maxp","weight",
+                                      "pandora","none"),multiarg=FALSE)
     check.text.args("fig.format",fig.format,c("png","jpg","tiff","bmp","pdf",
-        "ps"),multiarg=TRUE)
+                                              "ps"),multiarg=TRUE)
     check.text.args("export.what",export.what,c("annotation","p.value",
-        "adj.p.value","meta.p.value","adj.meta.p.value","fold.change","stats",
-        "counts","flags"),multiarg=TRUE)
+                                                "adj.p.value","meta.p.value","adj.meta.p.value","fold.change","stats",
+                                                "counts","flags"),multiarg=TRUE)
     check.text.args("export.scale",export.scale,c("natural","log2","log10",
-        "rpgm","vst"),multiarg=TRUE)
+                                                  "rpgm","vst"),multiarg=TRUE)
     check.text.args("export.values",export.values,c("raw","normalized"),
-        multiarg=TRUE)
+                    multiarg=TRUE)
     check.text.args("export.stats",export.stats,c("mean","median","sd","mad",
-        "cv","rcv"),multiarg=TRUE)
+                                                  "cv","rcv"),multiarg=TRUE)
     if (!is.null(preset))
         check.text.args("preset",preset,c("all.basic","all.normal","all.full",
-            "medium.basic","medium.normal","medium.full","strict.basic",
-            "strict.normal","strict.full"),multiarg=FALSE)
+                                          "medium.basic","medium.normal","medium.full","strict.basic",
+                                          "strict.normal","strict.full"),multiarg=FALSE)
     if (!is.null(qc.plots))
         check.text.args("qc.plots",qc.plots,c("mds","biodetection","countsbio",
-            "saturation","readnoise","correl","pairwise","boxplot","gcbias",
-            "lengthbias","meandiff","meanvar","rnacomp","deheatmap","volcano",
-            "biodist","filtered","venn"),multiarg=TRUE)
+                                              "saturation","readnoise","correl","pairwise","boxplot","gcbias",
+                                              "lengthbias","meandiff","meanvar","rnacomp","deheatmap","volcano",
+                                              "biodist","filtered","venn"),multiarg=TRUE)
     if (!is.na(restrict.cores)) check.num.args("restrict.cores",restrict.cores,
-        "numeric",c(0,1),"botheq")
+                                               "numeric",c(0,1),"botheq")
     if (!is.na(pcut)) check.num.args("pcut",pcut,"numeric",c(0,1),"botheq")
     if (!is.na(gc.col)) check.num.args("gc.col",gc.col,"numeric",0,"gt")
     if (!is.na(name.col)) check.num.args("name.col",name.col,"numeric",0,"gt")
     if (!is.na(bt.col)) check.num.args("bt.col",bt.col,"numeric",0,"gt")
     if (!is.na(log.offset)) check.num.args("log.offset",log.offset,"numeric",0,
-        "gt")
+                                           "gt")
     check.num.args("nperm",nperm,"numeric",10,"gt")
     check.num.args("utr.flank",utr.flank,"numeric")
     if (!is.null(report.top))
         check.num.args("report.top",report.top,"numeric",c(0,1),"both")
     if (!is.null(contrast)) 
     {
-		check.contrast.format(contrast,sample.list)
-		contrast <- unique(contrast)
-	}
+        check.contrast.format(contrast,sample.list)
+        contrast <- unique(contrast)
+    }
     if ("bayseq" %in% statistics) libsize.list <- check.libsize(libsize.list,
-        sample.list)
-
+                                                                sample.list)
+    
     # Check main functionality packages
     check.packages(meta.p,qc.plots)
     # Check if parallel processing is available
@@ -1102,27 +1102,27 @@ metaseqr <- function(
     {
         if (is.na(gc.col) && count.type=="gene")
             stopwrap("The column that contains the gene GC content ",
-                "(\"gc.col\") argument is required when \"annotation\" is ",
-                "\"embedded\"!")
+                     "(\"gc.col\") argument is required when \"annotation\" is ",
+                     "\"embedded\"!")
         if (is.na(name.col) && !is.na(gene.filters$expression$known))
         {
             warnwrap("The column that contains the HUGO gene symbols ",
-                "(\"bt.col\") is missing with embedded annotation! Gene name ",
-                "expression filter will not be available...")
+                     "(\"bt.col\") is missing with embedded annotation! Gene name ",
+                     "expression filter will not be available...")
             gene.filters$expression$known=NA
             if ("volcano" %in% qc.plots)
                 warnwrap("The column that contains the HUGO gene symbols ",
-                    "(\"bt.col\") is missing with embedded annotation! ",
-                    "Interactive volcano plots will not contain gene names...")
+                         "(\"bt.col\") is missing with embedded annotation! ",
+                         "Interactive volcano plots will not contain gene names...")
         }
         if (is.na(bt.col) && count.type=="gene")
         {
             warnwrap("The column that contains the gene biotypes (\"bt.col\") ",
-                "is missing with embedded annotation! Biotype filters and ",
-                "certain plots will not be available...")
+                     "is missing with embedded annotation! Biotype filters and ",
+                     "certain plots will not be available...")
             gene.filters$biotype=NULL
             to.remove <- match(c("biodetection","countsbio","saturation",
-                "biodist","filtered"),qc.plots)
+                                 "biodist","filtered"),qc.plots)
             no.match <- which(is.na(to.remove))
             if (length(no.match)>0)
                 to.remove <- to.remove[-no.match]
@@ -1133,11 +1133,11 @@ metaseqr <- function(
     if (org=="hg18" && (refdb %in% c("ucsc","refseq")))
     {
         warnwrap("Gene/exon biotypes cannot be retrieved when organism is ",
-            "\"hg18\" and annotation database is \"ucsc\" or \"refseq\"! ",
-            "Biotype filters and certain plots will not be available...")
+                 "\"hg18\" and annotation database is \"ucsc\" or \"refseq\"! ",
+                 "Biotype filters and certain plots will not be available...")
         gene.filters$biotype=NULL
         to.remove <- match(c("biodetection","countsbio","saturation",
-            "biodist","filtered"),qc.plots)
+                             "biodist","filtered"),qc.plots)
         no.match <- which(is.na(to.remove))
         if (length(no.match)>0)
             to.remove <- to.remove[-no.match]
@@ -1149,8 +1149,8 @@ metaseqr <- function(
     if ("venn" %in% qc.plots && length(statistics)==1)
     {
         warnwrap("The creation of a Venn diagram is possible only when more ",
-            "than one statistical algorithms are used (meta-analysis)! ",
-            "Removing from figures list...")
+                 "than one statistical algorithms are used (meta-analysis)! ",
+                 "Removing from figures list...")
         to.remove <- match("venn",qc.plots)
         no.match <- which(is.na(to.remove))
         if (length(no.match)>0)
@@ -1161,11 +1161,11 @@ metaseqr <- function(
     
     # Check what happens with custom organism and exons/utrs
     if (org=="custom" && count.type %in% c("exon","utr") 
-		&& (is.null(gene.file) || !file.exists(gene.file))) 
-		stopwrap("When org=\"custom\" and count.type is not \"gene\", ",
-			"an additional gene file must be provided with the gene.file ",
-			"argument!")
-
+        && (is.null(gene.file) || !file.exists(gene.file))) 
+        stopwrap("When org=\"custom\" and count.type is not \"gene\", ",
+                 "an additional gene file must be provided with the gene.file ",
+                 "argument!")
+    
     # Check additional input arguments for normalization and statistics
     alg.args <- validate.alg.args(normalization,statistics,norm.args,stat.args)
     norm.args <- alg.args$norm.args
@@ -1183,18 +1183,18 @@ metaseqr <- function(
         export.values <- preset.opts$export.values
         export.stats <- preset.opts$export.stats
     }
-
+    
     if (report)
     {
         report.messages <- make.report.messages("en")
         if (!is.null(qc.plots) && !("png" %in% fig.format))
         {
             warnwrap("png format is required in order to build a report! ",
-                "Adding to figure output formats...")
+                     "Adding to figure output formats...")
             fig.format <- c(fig.format,"png")
         }
     }
-
+    
     # Display initialization report
     TB <- Sys.time()
     disp(strftime(Sys.time()),": Data processing started...\n")
@@ -1218,7 +1218,7 @@ metaseqr <- function(
     disp("Reference source: ",refdb)
     disp("Count type: ",count.type)
     if (count.type == "utr")
-		disp("3' UTR flanking: ",utr.flank)
+        disp("3' UTR flanking: ",utr.flank)
     if (!is.null(preset))
         disp("Analysis preset: ",preset)
     disp("Transcriptional level: ",trans.level)
@@ -1237,7 +1237,7 @@ metaseqr <- function(
                     disp("    ",paste(efp,exon.filters[[ef]][[efp]],sep=": "))
                 else if (length(exon.filters[[ef]][[efp]])>1)
                     disp("    ",paste(efp,paste(exon.filters[[ef]][[efp]],
-                        collapse=", "),sep=": "))
+                                                collapse=", "),sep=": "))
             }
         }
     }
@@ -1258,7 +1258,7 @@ metaseqr <- function(
                     disp("    ",paste(gfp,gene.filters[[gf]][[gfp]],sep=": "))
                 else if (length(gene.filters[[gf]][[gfp]])>1)
                     disp("    ",paste(gfp,paste(gene.filters[[gf]][[gfp]],
-                        collapse=", "),sep=": "))
+                                                collapse=", "),sep=": "))
             }
         }
     }
@@ -1280,7 +1280,7 @@ metaseqr <- function(
                 disp("  ",paste(na,norm.args[[na]],sep=": "))
             else if (length(norm.args[[na]])>1)
                 disp("  ",paste(na,paste(norm.args[[na]],collapse=", "),
-                    sep=": "))
+                                sep=": "))
         }
     }
     disp("Statistical algorithm: ",paste(statistics,collapse=", "))
@@ -1298,7 +1298,7 @@ metaseqr <- function(
                 disp("  ",paste(sa,stat.args[[sa]],sep=": "))
             else if (length(stat.args[[sa]])>1)
                 disp("  ",paste(sa,paste(stat.args[[sa]],collapse=", "),
-                    sep=": "))
+                                sep=": "))
         }
     }
     disp("Meta-analysis method: ",meta.p)
@@ -1314,13 +1314,13 @@ metaseqr <- function(
     disp("Output values: ",paste(export.values,collapse=", "))
     if ("stats" %in% export.what)
         disp("Output statistics: ",paste(export.stats,collapse=", "),"\n")
-        
+    
     if (is.function(progress.fun)) {
         text <- paste("Starting the analysis...")
         progress.fun(detail=text)
     }
     ############################################################################
-
+    
     if (count.type=="exon")
     {
         # Download gene annotation anyway if not previous analysis restored
@@ -1328,29 +1328,29 @@ metaseqr <- function(
         {
             if (org=="custom") 
             {
-				if (!is.null(gene.file) && file.exists(gene.file)) 
-				{
-					disp("Reading custom external gene annotation for from ",
-						gene.file,"...")
-					gene.data <- read.delim(gene.file)
-					rownames(gene.data) <- as.character(gene.data$gene_id)
-					if (!is.null(gene.data$gc_content) # Already divided
-						&& max(as.numeric(gene.data$gc_content))<=1)
-						gene.data$gc_content = 
-							100*as.numeric(gene.data$gc_content)
-				}
-			}
-			else
-			{
-				if (trans.level=="gene") {
-					disp("Downloading gene annotation for ",org,"...")
-					gene.data <- get.annotation(org,"gene",refdb)
-				}
-				else if (trans.level=="transcript") {
-					disp("Downloading transcript annotation for ",org,"...")
-					gene.data <- get.annotation(org,"transcript",refdb)
-				}
-			}
+                if (!is.null(gene.file) && file.exists(gene.file)) 
+                {
+                    disp("Reading custom external gene annotation for from ",
+                         gene.file,"...")
+                    gene.data <- read.delim(gene.file)
+                    rownames(gene.data) <- as.character(gene.data$gene_id)
+                    if (!is.null(gene.data$gc_content) # Already divided
+                        && max(as.numeric(gene.data$gc_content))<=1)
+                        gene.data$gc_content = 
+                        100*as.numeric(gene.data$gc_content)
+                }
+            }
+            else
+            {
+                if (trans.level=="gene") {
+                    disp("Downloading gene annotation for ",org,"...")
+                    gene.data <- get.annotation(org,"gene",refdb)
+                }
+                else if (trans.level=="transcript") {
+                    disp("Downloading transcript annotation for ",org,"...")
+                    gene.data <- get.annotation(org,"transcript",refdb)
+                }
+            }
         }
         
         if (!from.previous)
@@ -1385,12 +1385,12 @@ metaseqr <- function(
                     "gene_name"
                 if (!is.na(bt.col)) colnames(exon.data)[bt.col] <- "biotype"
                 exon.counts <- cbind(exon.data[rownames(exon.counts),c("start",
-                    "end","exon_id","gene_id")],exon.counts)
+                                                                       "end","exon_id","gene_id")],exon.counts)
             }
             else # Reading from external file, similar to embedded
             {
                 disp("Reading external exon annotation for ",org," from ",
-                    annotation,"...")
+                     annotation,"...")
                 exon.data <- read.delim(annotation)
                 colnames(exon.data)[id.col] <- "exon_id"
             }
@@ -1401,7 +1401,7 @@ metaseqr <- function(
             exon.data <- tmp.env$exon.data
             gene.data <- tmp.env$gene.data
         }
-
+        
         # Else everything is provided and done
         #if (is.data.frame(counts))
         if (annotation!="embedded" & !from.previous)
@@ -1417,14 +1417,14 @@ metaseqr <- function(
                     exon.counts <- counts
                 rownames(exon.counts) <- as.character(exon.counts[,id.col])
                 exon.counts <- exon.counts[,unlist(sample.list,
-                    use.names=FALSE)]
+                                                   use.names=FALSE)]
             }
             else # Coming from read2count
             {
                 if (from.raw) # Double check
                 {
                     r2c <- read2count(the.list,exon.data,file.type,
-                        utr.flank,multic=multic)
+                                      utr.flank,multic=multic)
                     exon.counts <- r2c$counts
                     # Merged exon data!
                     exon.data <- r2c$mergedann
@@ -1432,10 +1432,10 @@ metaseqr <- function(
                         libsize.list <- r2c$libsize
                     if (export.counts.table) {
                         disp("Exporting raw read counts table to ",
-                            file.path(PROJECT.PATH[["lists"]],
-                            "raw_counts_table.txt.gz"))
+                             file.path(PROJECT.PATH[["lists"]],
+                                       "raw_counts_table.txt.gz"))
                         res.file <- file.path(PROJECT.PATH[["lists"]],
-                            "raw_counts_table.txt.gz")
+                                              "raw_counts_table.txt.gz")
                         gzfh <- gzfile(res.file,"w")
                         write.table(cbind(
                             exon.data[rownames(exon.counts),],
@@ -1446,66 +1446,66 @@ metaseqr <- function(
                 }
             }
             exon.counts <- cbind(exon.data[rownames(exon.counts),c("start",
-                "end","exon_id","gene_id")],exon.counts[,unlist(sample.list,
-                use.names=FALSE)])
-
+                                                                   "end","exon_id","gene_id")],exon.counts[,unlist(sample.list,
+                                                                                                                   use.names=FALSE)])
+            
             # Get the exon counts per gene model
             disp("Checking chromosomes in exon counts and gene annotation...")
             gene.data <- reduce.gene.data(exon.data[rownames(exon.counts),],
-                gene.data)
+                                          gene.data)
             disp("Processing exons...")
             the.counts <- construct.gene.model(exon.counts,sample.list,
-                gene.data,multic=multic)
-
+                                               gene.data,multic=multic)
+            
             if (save.gene.model)
             {
                 disp("Saving gene model to ",file.path(PROJECT.PATH[["data"]],
-                    "gene_model.RData"))
+                                                       "gene_model.RData"))
                 save(the.counts,exon.data,gene.data,sample.list,count.type,
-                    file=file.path(PROJECT.PATH$data,"gene_model.RData"),
-                    compress=TRUE)
+                     file=file.path(PROJECT.PATH$data,"gene_model.RData"),
+                     compress=TRUE)
             }
         }
         # Retrieved gene model and/or previous analysis
         else if (annotation !="embedded" && from.previous)
             the.counts <- counts
         else if (annotation=="embedded") {
-			# First time read, construct gene model
-			disp("Checking chromosomes in exon counts and gene annotation...")
+            # First time read, construct gene model
+            disp("Checking chromosomes in exon counts and gene annotation...")
             gene.data <- reduce.gene.data(exon.data[rownames(exon.counts),],
-                gene.data)
+                                          gene.data)
             disp("Processing exons...")
             the.counts <- construct.gene.model(exon.counts,sample.list,
-                gene.data,multic=multic)
-
+                                               gene.data,multic=multic)
+            
             if (save.gene.model)
             {
                 disp("Saving gene model to ",file.path(PROJECT.PATH[["data"]],
-                    "gene_model.RData"))
+                                                       "gene_model.RData"))
                 save(the.counts,exon.data,gene.data,sample.list,count.type,
-                    file=file.path(PROJECT.PATH$data,"gene_model.RData"),
-                    compress=TRUE)
+                     file=file.path(PROJECT.PATH$data,"gene_model.RData"),
+                     compress=TRUE)
             }
-		}
-            
+        }
+        
         # Exclude any samples not wanted (when e.g. restoring a previous project
         # and having determined that some samples are of bad quality
         if (!is.null(exclude.list) && !is.na(exclude.list))
         {
             for (n in names(exclude.list)) {
                 sample.list[[n]] <- setdiff(sample.list[[n]],
-                    exclude.list[[n]])
+                                            exclude.list[[n]])
                 if (length(sample.list[[n]])==0) # Removed whole condition
                     sample.list[n] <- NULL
             }
             the.counts <- the.counts[unlist(sample.list)]
         }
-
+        
         # Apply exon filters
         if (!is.null(exon.filters))
         {
             exon.filter.out <- filter.exons(the.counts,gene.data,sample.list,
-                exon.filters)
+                                            exon.filters)
             exon.filter.result <- exon.filter.out$result
             exon.filter.flags <- exon.filter.out$flags
         }
@@ -1514,14 +1514,14 @@ metaseqr <- function(
         
         disp("Summarizing count data...")
         the.gene.counts <- the.exon.lengths <- vector("list",
-            length(unlist(sample.list)))
+                                                      length(unlist(sample.list)))
         names(the.gene.counts) <- names(the.exon.lengths) <- names(the.counts)
         for (n in names(the.gene.counts))
         {
             the.gene.counts[[n]] <- wapply(multic,the.counts[[n]],
-                function(x) return(sum(x$count)))
+                                           function(x) return(sum(x$count)))
             the.exon.lengths[[n]] <- wapply(multic,the.counts[[n]],
-                function(x) return(sum(x$length)))
+                                            function(x) return(sum(x$length)))
             the.gene.counts[[n]] <- do.call("c",the.gene.counts[[n]])
             the.exon.lengths[[n]] <- do.call("c",the.exon.lengths[[n]])
         }
@@ -1541,29 +1541,29 @@ metaseqr <- function(
         {
             if (org=="custom") 
             {
-				if (!is.null(gene.file) && file.exists(gene.file)) 
-				{
-					disp("Reading custom external gene annotation for from ",
-						gene.file,"...")
-					gene.data <- read.delim(gene.file)
-					rownames(gene.data) <- as.character(gene.data$gene_id)
-					if (!is.null(gene.data$gc_content) # Already divided
-						&& max(as.numeric(gene.data$gc_content))<=1)
-						gene.data$gc_content = 
-							100*as.numeric(gene.data$gc_content)
-				}
-			}
-			else
-			{
-				if (trans.level=="gene") {
-					disp("Downloading gene annotation for ",org,"...")
-					gene.data <- get.annotation(org,"gene",refdb)
-				}
-				else if (trans.level=="transcript") {
-					disp("Downloading transcript annotation for ",org,"...")
-					gene.data <- get.annotation(org,"transcript",refdb)
-				}
-			}
+                if (!is.null(gene.file) && file.exists(gene.file)) 
+                {
+                    disp("Reading custom external gene annotation for from ",
+                         gene.file,"...")
+                    gene.data <- read.delim(gene.file)
+                    rownames(gene.data) <- as.character(gene.data$gene_id)
+                    if (!is.null(gene.data$gc_content) # Already divided
+                        && max(as.numeric(gene.data$gc_content))<=1)
+                        gene.data$gc_content = 
+                        100*as.numeric(gene.data$gc_content)
+                }
+            }
+            else
+            {
+                if (trans.level=="gene") {
+                    disp("Downloading gene annotation for ",org,"...")
+                    gene.data <- get.annotation(org,"gene",refdb)
+                }
+                else if (trans.level=="transcript") {
+                    disp("Downloading transcript annotation for ",org,"...")
+                    gene.data <- get.annotation(org,"transcript",refdb)
+                }
+            }
         }
         
         if (!from.previous)
@@ -1571,10 +1571,10 @@ metaseqr <- function(
             if (annotation=="download")
             {
                 if (trans.level %in% c("gene","transcript")) {
-					disp("Downloading transcript annotation for ",org,"...")
-					transcript.data <- get.annotation(org,count.type,refdb,
-						multic)
-				}
+                    disp("Downloading transcript annotation for ",org,"...")
+                    transcript.data <- get.annotation(org,count.type,refdb,
+                                                      multic)
+                }
             }
             else if (annotation=="embedded")
             {
@@ -1590,10 +1590,10 @@ metaseqr <- function(
                 else
                     transcript.counts <- counts
                 rownames(transcript.counts) <- 
-					as.character(transcript.counts[,id.col])
+                    as.character(transcript.counts[,id.col])
                 all.cols <- 1:ncol(transcript.counts)
                 sam.cols <- match(unlist(sample.list),
-					colnames(transcript.counts))
+                                  colnames(transcript.counts))
                 sam.cols <- sam.cols[which(!is.na(sam.cols))]
                 ann.cols <- all.cols[-sam.cols]
                 transcript.data <- transcript.counts[,ann.cols]
@@ -1602,15 +1602,15 @@ metaseqr <- function(
                 if (!is.na(name.col)) colnames(transcript.data)[name.col] <- 
                     "gene_name"
                 if (!is.na(bt.col)) 
-					colnames(transcript.data)[bt.col] <- "biotype"
+                    colnames(transcript.data)[bt.col] <- "biotype"
                 transcript.counts <- 
-					cbind(transcript.data[rownames(transcript.counts),c("start",
-						"end","transcript_id","gene_id")],transcript.counts)
+                    cbind(transcript.data[rownames(transcript.counts),c("start",
+                                                                        "end","transcript_id","gene_id")],transcript.counts)
             }
             else # Reading from external file, similar to embedded
             {
                 disp("Reading external transcript annotation for ",org," from ",
-                    annotation,"...")
+                     annotation,"...")
                 transcript.data <- read.delim(annotation)
                 colnames(transcript.data)[id.col] <- "transcript_id"
             }
@@ -1621,7 +1621,7 @@ metaseqr <- function(
             transcript.data <- tmp.env$transcript.data
             gene.data <- tmp.env$gene.data
         }
-
+        
         # Else everything is provided and done
         #if (is.data.frame(counts))
         if (annotation!="embedded" & !from.previous)
@@ -1636,16 +1636,16 @@ metaseqr <- function(
                 else # Already a data frame as input
                     transcript.counts <- counts
                 rownames(transcript.counts) <- 
-					as.character(transcript.counts[,id.col])
+                    as.character(transcript.counts[,id.col])
                 transcript.counts <- transcript.counts[,unlist(sample.list,
-                    use.names=FALSE)]
+                                                               use.names=FALSE)]
             }
             else # Coming from read2count
             {
                 if (from.raw) # Double check
                 {
                     r2c <- read2count(the.list,transcript.data,file.type,
-                        trans.level,utr.flank,multic=multic)
+                                      trans.level,utr.flank,multic=multic)
                     transcript.counts <- r2c$counts
                     # Merged transcript data!
                     transcript.data <- r2c$mergedann
@@ -1653,10 +1653,10 @@ metaseqr <- function(
                         libsize.list <- r2c$libsize
                     if (export.counts.table) {
                         disp("Exporting raw read counts table to ",
-                            file.path(PROJECT.PATH[["lists"]],
-                            "raw_counts_table.txt.gz"))
+                             file.path(PROJECT.PATH[["lists"]],
+                                       "raw_counts_table.txt.gz"))
                         res.file <- file.path(PROJECT.PATH[["lists"]],
-                            "raw_counts_table.txt.gz")
+                                              "raw_counts_table.txt.gz")
                         gzfh <- gzfile(res.file,"w")
                         write.table(cbind(
                             transcript.data[rownames(transcript.counts),],
@@ -1667,86 +1667,86 @@ metaseqr <- function(
                 }
             }
             transcript.counts <- 
-				cbind(transcript.data[rownames(transcript.counts),c("start",
-					"end","transcript_id","gene_id")],
-					transcript.counts[,unlist(sample.list,use.names=FALSE)])
-
+                cbind(transcript.data[rownames(transcript.counts),c("start",
+                                                                    "end","transcript_id","gene_id")],
+                      transcript.counts[,unlist(sample.list,use.names=FALSE)])
+            
             # Get the transcript counts per gene model
             disp("Checking chromosomes in transcript counts and gene ",
-				"annotation...")
+                 "annotation...")
             gene.data <- 
-				reduce.gene.data(transcript.data[rownames(transcript.counts),],
-					gene.data)
+                reduce.gene.data(transcript.data[rownames(transcript.counts),],
+                                 gene.data)
             disp("Processing transcripts...")
             if (trans.level=="gene")
-				the.counts <- construct.utr.model(transcript.counts,sample.list,
-					gene.data,multic=multic)
-			else if (trans.level=="transcript")
-				the.counts <- construct.utr.model(transcript.counts,sample.list,
-					transcript.data,multic=multic)
-
+                the.counts <- construct.utr.model(transcript.counts,sample.list,
+                                                  gene.data,multic=multic)
+            else if (trans.level=="transcript")
+                the.counts <- construct.utr.model(transcript.counts,sample.list,
+                                                  transcript.data,multic=multic)
+            
             if (save.gene.model)
             {
                 disp("Saving gene model to ",file.path(PROJECT.PATH[["data"]],
-                    "gene_model.RData"))
+                                                       "gene_model.RData"))
                 save(the.counts,transcript.data,gene.data,sample.list,
-                    count.type,
-                    file=file.path(PROJECT.PATH$data,"gene_model.RData"),
-                    compress=TRUE)
+                     count.type,
+                     file=file.path(PROJECT.PATH$data,"gene_model.RData"),
+                     compress=TRUE)
             }
         }
         # Retrieved gene model and/or previous analysis
         else if (annotation !="embedded" && from.previous)
             the.counts <- counts
         else if (annotation=="embedded") {
-			# First time read, construct gene model
-			disp("Checking chromosomes in transcript counts and gene ",
-				"annotation...")
+            # First time read, construct gene model
+            disp("Checking chromosomes in transcript counts and gene ",
+                 "annotation...")
             gene.data <- 
-				reduce.gene.data(transcript.data[rownames(transcript.counts),],
-					gene.data)
+                reduce.gene.data(transcript.data[rownames(transcript.counts),],
+                                 gene.data)
             disp("Processing transcripts...")
             the.counts <- construct.utr.model(transcript.counts,sample.list,
-                gene.data,multic=multic)
-
+                                              gene.data,multic=multic)
+            
             if (save.gene.model)
             {
                 disp("Saving gene model to ",file.path(PROJECT.PATH[["data"]],
-                    "gene_model.RData"))
+                                                       "gene_model.RData"))
                 save(the.counts,transcript.data,gene.data,sample.list,
-                    count.type,
-					file=file.path(PROJECT.PATH$data,"gene_model.RData"),
-                    compress=TRUE)
+                     count.type,
+                     file=file.path(PROJECT.PATH$data,"gene_model.RData"),
+                     compress=TRUE)
             }
-		}
-            
+        }
+        
         # Exclude any samples not wanted (when e.g. restoring a previous project
         # and having determined that some samples are of bad quality
         if (!is.null(exclude.list) && !is.na(exclude.list))
         {
             for (n in names(exclude.list)) {
                 sample.list[[n]] <- setdiff(sample.list[[n]],
-                    exclude.list[[n]])
+                                            exclude.list[[n]])
                 if (length(sample.list[[n]])==0) # Removed whole condition
                     sample.list[n] <- NULL
             }
             the.counts <- the.counts[unlist(sample.list)]
         }
-
+        
         disp("Summarizing count data...")
         the.gene.counts <- the.transcript.lengths <- vector("list",
-            length(unlist(sample.list)))
+                                                            length(unlist(sample.list)))
         names(the.gene.counts) <- names(the.transcript.lengths) <- 
-			names(the.counts)
+            names(the.counts)
         for (n in names(the.gene.counts))
         {
             the.gene.counts[[n]] <- wapply(multic,the.counts[[n]],
-                function(x) return(sum(x$count)))
+                                           function(x) return(sum(x$count)))
             the.transcript.lengths[[n]] <- wapply(multic,the.counts[[n]],
-                function(x) return(sum(x$length)))
+                                                  function(x) return(sum(x$length)))
             the.gene.counts[[n]] <- do.call("c",the.gene.counts[[n]])
             the.transcript.lengths[[n]] <- 
-				do.call("c",the.transcript.lengths[[n]])
+                do.call("c",the.transcript.lengths[[n]])
         }
         gene.counts <- do.call("cbind",the.gene.counts)
         gene.length <- the.transcript.lengths[[1]]
@@ -1767,19 +1767,19 @@ metaseqr <- function(
             if (annotation=="download")
             {
                 if (trans.level=="gene") {
-					disp("Downloading gene annotation for ",org,"...")
-					gene.data <- get.annotation(org,count.type,refdb)
-				}
-				else if (trans.level=="transcript") {
-					disp("Downloading transcript annotation for ",org,"...")
-					gene.data <- get.annotation(org,"transcript",refdb)
-					gene.data$gc_content = rep(0.5,nrow(gene.data))
-				}
-				else if (trans.level=="exon") {
-					disp("Downloading exon annotation for ",org,"...")
-					gene.data <- get.annotation(org,"exon",refdb)
-					gene.data$gc_content = rep(0.5,nrow(gene.data))
-				}
+                    disp("Downloading gene annotation for ",org,"...")
+                    gene.data <- get.annotation(org,count.type,refdb)
+                }
+                else if (trans.level=="transcript") {
+                    disp("Downloading transcript annotation for ",org,"...")
+                    gene.data <- get.annotation(org,"transcript",refdb)
+                    gene.data$gc_content = rep(0.5,nrow(gene.data))
+                }
+                else if (trans.level=="exon") {
+                    disp("Downloading exon annotation for ",org,"...")
+                    gene.data <- get.annotation(org,"exon",refdb)
+                    gene.data$gc_content = rep(0.5,nrow(gene.data))
+                }
             }
             else if (annotation=="embedded")
             {
@@ -1800,11 +1800,11 @@ metaseqr <- function(
                 gene.data <- gene.counts[,ann.cols]
                 gene.counts <- gene.counts[,sam.cols]
                 if (trans.level=="gene")
-					colnames(gene.data)[id.col] <- "gene_id"
-				else if (trans.level=="transcript")
-					colnames(gene.data)[id.col] <- "transcript_id"
-				else if (trans.level=="exon")
-					colnames(gene.data)[id.col] <- "exon_id"
+                    colnames(gene.data)[id.col] <- "gene_id"
+                else if (trans.level=="transcript")
+                    colnames(gene.data)[id.col] <- "transcript_id"
+                else if (trans.level=="exon")
+                    colnames(gene.data)[id.col] <- "exon_id"
                 if (!is.na(gc.col))
                 {
                     colnames(gene.data)[gc.col] <- "gc_content"
@@ -1826,14 +1826,14 @@ metaseqr <- function(
                     gene.counts <- counts
                 rownames(gene.counts) <- as.character(gene.counts[,id.col])
                 disp("Reading external ",trans.level," annotation for ",org,
-					" from ",annotation,"...")
+                     " from ",annotation,"...")
                 gene.data <- read.delim(annotation)
                 if (trans.level=="gene")
-					rownames(gene.data) <- as.character(gene.data$gene_id)
-				else if (trans.level=="transcript")
-					rownames(gene.data) <- as.character(gene.data$transcript_id)
-				else if (trans.level=="exon")
-					rownames(gene.data) <- as.character(gene.data$exon_id)
+                    rownames(gene.data) <- as.character(gene.data$gene_id)
+                else if (trans.level=="transcript")
+                    rownames(gene.data) <- as.character(gene.data$transcript_id)
+                else if (trans.level=="exon")
+                    rownames(gene.data) <- as.character(gene.data$exon_id)
                 gene.data <- gene.data[rownames(gene.counts),]
                 if (max(gene.data$gc_content)<=1) # Is already divided
                     gene.data$gc_content = 100*gene.data$gc_content
@@ -1847,8 +1847,8 @@ metaseqr <- function(
         
         total.gene.data <- gene.data # We need this for some total stats
         exon.filter.result <- NULL
-
-		# Else everything is provided and done
+        
+        # Else everything is provided and done
         if (annotation!="embedded" & !from.previous)
         {
             if (!is.null(counts)) # Otherwise it's coming ready from read2count
@@ -1862,33 +1862,33 @@ metaseqr <- function(
                     gene.counts <- counts
                 rownames(gene.counts) <- as.character(gene.counts[,id.col])
                 gene.counts <- gene.counts[,unlist(sample.list,
-                    use.names=FALSE)]
+                                                   use.names=FALSE)]
             }
             else # Coming from read2count
             {
                 if (from.raw) # Double check
                 {
                     r2c <- read2count(the.list,gene.data,file.type,
-                        utr.flank,multic=multic)
+                                      utr.flank,multic=multic)
                     gene.counts <- r2c$counts
                     if (is.null(libsize.list))
                         libsize.list <- r2c$libsize
                     if (export.counts.table) {
                         disp("Exporting raw read counts table to ",
-                            file.path(PROJECT.PATH[["lists"]],
-                            "raw_counts_table.txt.gz"))
+                             file.path(PROJECT.PATH[["lists"]],
+                                       "raw_counts_table.txt.gz"))
                         res.file <- file.path(PROJECT.PATH[["lists"]],
-                            "raw_counts_table.txt.gz")
+                                              "raw_counts_table.txt.gz")
                         gzfh <- gzfile(res.file,"w")
                         write.table(cbind(gene.data[rownames(gene.counts),],
-                            gene.counts),gzfh,sep="\t",row.names=FALSE,
-                            quote=FALSE)
+                                          gene.counts),gzfh,sep="\t",row.names=FALSE,
+                                    quote=FALSE)
                         close(gzfh)
                     }
                 }
             }
         }
-
+        
         gene.data <- gene.data[rownames(gene.counts),]
         gene.length <- gene.data$end - gene.data$start # Based on total gene lengths
         names(gene.length) <- rownames(gene.data)
@@ -1899,7 +1899,7 @@ metaseqr <- function(
         {
             for (n in names(exclude.list)) {
                 sample.list[[n]] <- setdiff(sample.list[[n]],
-                    exclude.list[[n]])
+                                            exclude.list[[n]])
                 if (length(sample.list[[n]])==0) # Removed whole condition
                     sample.list[n] <- NULL
             }
@@ -1909,21 +1909,21 @@ metaseqr <- function(
         if (save.gene.model)
         {
             disp("Saving gene model to ",file.path(PROJECT.PATH[["data"]],
-                "gene_model.RData"))
+                                                   "gene_model.RData"))
             save(gene.counts,gene.data,sample.list,count.type,
-                file=file.path(PROJECT.PATH$data,"gene_model.RData"),
-                compress=TRUE)
+                 file=file.path(PROJECT.PATH$data,"gene_model.RData"),
+                 compress=TRUE)
         }
     }
-
+    
     # Transform GC-content and biotype
     if (is.null(gene.data$gc_content))
-		gene.data$gc_content <- rep(0.5,nrow(gene.data))
+        gene.data$gc_content <- rep(0.5,nrow(gene.data))
     if (is.null(gene.data$biotype))
         gene.data$biotype <- rep(NA,nrow(gene.data))
     names(gene.length) <- rownames(gene.counts)
     attr(gene.data,"gene.length") <- gene.length
-
+    
     ############################################################################
     # BEGIN FILTERING SECTION
     ############################################################################
@@ -1950,10 +1950,10 @@ metaseqr <- function(
     }
     else
         gene.counts.zero <- gene.data.zero <- the.zero.names <- NULL
-
+    
     # Store un-normalized gene counts for export purposes
     gene.counts.unnorm <- gene.counts
-
+    
     # Apply filtering prior to normalization if desired
     if (when.apply.filter=="prenorm")
     {
@@ -1961,38 +1961,38 @@ metaseqr <- function(
         # get proper expression filters
         disp("Prefiltering normalization with: ",normalization)
         switch(normalization,
-            edaseq = {
-                temp.genes <- normalize.edaseq(gene.counts,sample.list,
-                    norm.args,gene.data,output="matrix")
-            },
-            deseq = {
-                temp.genes <- normalize.deseq(gene.counts,sample.list,norm.args,
-                    output="matrix")
-            },
-            edger = {
-                temp.genes <- normalize.edger(gene.counts,sample.list,norm.args,
-                    output="matrix")
-            },
-            noiseq = {
-                temp.genes <- normalize.noiseq(gene.counts,sample.list,
-                    norm.args,gene.data,log.offset,output="matrix")
-            },
-            nbpseq = {
-                temp.genes <- normalize.nbpseq(gene.counts,sample.list,
-                    norm.args,libsize.list,output="matrix")
-            },
-            none = {
-                # In case some external normalization is applied (e.g. equal read 
-                # counts from all samples)
-                temp.genes <- gene.counts
-            }
+               edaseq = {
+                   temp.genes <- normalize.edaseq(gene.counts,sample.list,
+                                                  norm.args,gene.data,output="matrix")
+               },
+               deseq = {
+                   temp.genes <- normalize.deseq(gene.counts,sample.list,norm.args,
+                                                 output="matrix")
+               },
+               edger = {
+                   temp.genes <- normalize.edger(gene.counts,sample.list,norm.args,
+                                                 output="matrix")
+               },
+               noiseq = {
+                   temp.genes <- normalize.noiseq(gene.counts,sample.list,
+                                                  norm.args,gene.data,log.offset,output="matrix")
+               },
+               nbpseq = {
+                   temp.genes <- normalize.nbpseq(gene.counts,sample.list,
+                                                  norm.args,libsize.list,output="matrix")
+               },
+               none = {
+                   # In case some external normalization is applied (e.g. equal read 
+                   # counts from all samples)
+                   temp.genes <- gene.counts
+               }
         )
         
         # Now filter
         if (!is.null(gene.filters))
         {
             gene.filter.out <- filter.genes(temp.genes,gene.data,gene.filters,
-				sample.list)
+                                            sample.list)
             gene.filter.result <- gene.filter.out$result
             gene.filter.cutoff <- gene.filter.out$cutoff
             gene.filter.flags <- gene.filter.out$flags
@@ -2000,7 +2000,7 @@ metaseqr <- function(
         else
             gene.filter.result <- gene.filter.cutoff <-
                 gene.filter.flags <- NULL
-
+        
         # Unify the filters and filter
         the.dead.genes <- list(
             gene.filter.result$expression$median,
@@ -2022,13 +2022,13 @@ metaseqr <- function(
             gene.counts.unnorm <- gene.counts.unnorm[the.dead,]
             gene.data.dead <- gene.data[the.dead,]
             attr(gene.data.dead,"gene.length") <- attr(gene.data,
-                "gene.length")[the.dead]
+                                                       "gene.length")[the.dead]
             # Now filter
             the.dead.ind <- match(the.dead,rownames(gene.counts))
             gene.counts.expr <- gene.counts[-the.dead.ind,]
             gene.data.expr <- gene.data[-the.dead.ind,]
             attr(gene.data.expr,"gene.length") <- attr(gene.data,
-                "gene.length")[-the.dead.ind]
+                                                       "gene.length")[-the.dead.ind]
         }
         else
         {
@@ -2044,29 +2044,29 @@ metaseqr <- function(
         
         disp("Normalizing with: ",normalization)
         switch(normalization,
-            edaseq = {
-                norm.genes <- normalize.edaseq(gene.counts.expr,sample.list,
-                    norm.args,gene.data.expr,output="matrix")
-            },
-            deseq = {
-                norm.genes <- normalize.deseq(gene.counts.expr,sample.list,
-                    norm.args,output="native")
-            },
-            edger = {
-                norm.genes <- normalize.edger(gene.counts.expr,sample.list,
-                    norm.args,output="native")
-            },
-            noiseq = {
-                norm.genes <- normalize.noiseq(gene.counts.expr,sample.list,
-                    norm.args,gene.data.expr,log.offset,output="matrix")
-            },
-            nbpseq = {
-                norm.genes <- normalize.nbpseq(gene.counts.expr,sample.list,
-                    norm.args,libsize.list,output="native")
-            },
-            none = {
-                norm.genes <- gene.counts.expr
-            }
+               edaseq = {
+                   norm.genes <- normalize.edaseq(gene.counts.expr,sample.list,
+                                                  norm.args,gene.data.expr,output="matrix")
+               },
+               deseq = {
+                   norm.genes <- normalize.deseq(gene.counts.expr,sample.list,
+                                                 norm.args,output="native")
+               },
+               edger = {
+                   norm.genes <- normalize.edger(gene.counts.expr,sample.list,
+                                                 norm.args,output="native")
+               },
+               noiseq = {
+                   norm.genes <- normalize.noiseq(gene.counts.expr,sample.list,
+                                                  norm.args,gene.data.expr,log.offset,output="matrix")
+               },
+               nbpseq = {
+                   norm.genes <- normalize.nbpseq(gene.counts.expr,sample.list,
+                                                  norm.args,libsize.list,output="native")
+               },
+               none = {
+                   norm.genes <- gene.counts.expr
+               }
         )
         norm.genes.expr <- norm.genes
     }
@@ -2080,68 +2080,68 @@ metaseqr <- function(
         # Apply filtering after normalization if desired (default)
         disp("Normalizing with: ",normalization)
         switch(normalization,
-            edaseq = {
-                norm.genes <- normalize.edaseq(gene.counts,sample.list,
-                    norm.args,gene.data,output="matrix")
-            },
-            deseq = {
-                norm.genes <- normalize.deseq(gene.counts,sample.list,norm.args,
-                    output="native")
-            },
-            edger = {
-                norm.genes <- normalize.edger(gene.counts,sample.list,norm.args,
-                    output="native")
-            },
-            noiseq = {
-                norm.genes <- normalize.noiseq(gene.counts,sample.list,
-                    norm.args,gene.data,log.offset,output="matrix")
-            },
-            nbpseq = {
-                norm.genes <- normalize.nbpseq(gene.counts,sample.list,
-                    norm.args,libsize.list,output="native")
-            },
-            none = {
-                norm.genes <- gene.counts
-            }
+               edaseq = {
+                   norm.genes <- normalize.edaseq(gene.counts,sample.list,
+                                                  norm.args,gene.data,output="matrix")
+               },
+               deseq = {
+                   norm.genes <- normalize.deseq(gene.counts,sample.list,norm.args,
+                                                 output="native")
+               },
+               edger = {
+                   norm.genes <- normalize.edger(gene.counts,sample.list,norm.args,
+                                                 output="native")
+               },
+               noiseq = {
+                   norm.genes <- normalize.noiseq(gene.counts,sample.list,
+                                                  norm.args,gene.data,log.offset,output="matrix")
+               },
+               nbpseq = {
+                   norm.genes <- normalize.nbpseq(gene.counts,sample.list,
+                                                  norm.args,libsize.list,output="native")
+               },
+               none = {
+                   norm.genes <- gene.counts
+               }
         )
-    
+        
         switch(class(norm.genes),
-            CountDataSet = { # Has been normalized with DESeq
-                temp.matrix <- round(counts(norm.genes,normalized=TRUE))
-            },
-            DGEList = { # Has been normalized with edgeR
-                # Trick found at http://cgrlucb.wikispaces.com/edgeR+spring2013
-                scl <- norm.genes$samples$lib.size *
-                    norm.genes$samples$norm.factors
-                temp.matrix <- round(t(t(norm.genes$counts)/scl)*mean(scl))
-            },
-            matrix = { # Has been normalized with EDASeq or NOISeq or nothing
-                temp.matrix <- norm.genes
-            },
-            data.frame = { # Has been normalized with or nothing
-                temp.matrix <- as.matrix(norm.genes)
-            },
-            list = { # Has been normalized with NBPSeq and main method was "nbpseq"
-                temp.matrix <- as.matrix(round(sweep(norm.genes$counts,2,
-                    norm.genes$norm.factors,"*")))
-            },
-            nbp = { # Has been normalized with NBPSeq and main method was "nbsmyth"
-                 temp.matrix <- as.matrix(round(norm.genes$pseudo.counts))
-            }
+               CountDataSet = { # Has been normalized with DESeq
+                   temp.matrix <- round(counts(norm.genes,normalized=TRUE))
+               },
+               DGEList = { # Has been normalized with edgeR
+                   # Trick found at http://cgrlucb.wikispaces.com/edgeR+spring2013
+                   scl <- norm.genes$samples$lib.size *
+                       norm.genes$samples$norm.factors
+                   temp.matrix <- round(t(t(norm.genes$counts)/scl)*mean(scl))
+               },
+               matrix = { # Has been normalized with EDASeq or NOISeq or nothing
+                   temp.matrix <- norm.genes
+               },
+               data.frame = { # Has been normalized with or nothing
+                   temp.matrix <- as.matrix(norm.genes)
+               },
+               list = { # Has been normalized with NBPSeq and main method was "nbpseq"
+                   temp.matrix <- as.matrix(round(sweep(norm.genes$counts,2,
+                                                        norm.genes$norm.factors,"*")))
+               },
+               nbp = { # Has been normalized with NBPSeq and main method was "nbsmyth"
+                   temp.matrix <- as.matrix(round(norm.genes$pseudo.counts))
+               }
         )
-
+        
         # Implement gene filters after normalization
         if (!is.null(gene.filters)) {
             gene.filter.out <- filter.genes(temp.matrix,gene.data,gene.filters,
-				sample.list)
+                                            sample.list)
             gene.filter.result <- gene.filter.out$result
             gene.filter.cutoff <- gene.filter.out$cutoff
             gene.filter.flags <- gene.filter.out$flags
         }
         else
             gene.filter.result <- gene.filter.cutoff <-
-                gene.filter.flags <- NULL
-
+            gene.filter.flags <- NULL
+        
         # Unify the filters and filter
         the.dead.genes <- list(
             gene.filter.result$expression$median,
@@ -2164,43 +2164,43 @@ metaseqr <- function(
             gene.counts.unnorm <- gene.counts.unnorm[the.dead,]
             gene.data.dead <- gene.data[the.dead,]
             attr(gene.data.dead,"gene.length") <- attr(gene.data,
-                "gene.length")[the.dead]
+                                                       "gene.length")[the.dead]
             # Now filter
             the.dead.ind <- match(the.dead,rownames(temp.matrix))
             switch(class(norm.genes),
-                CountDataSet = {
-                    norm.genes.expr <- norm.genes[-the.dead.ind,]
-                },
-                DGEList = { # edgeR bug???
-                    norm.genes.expr <- norm.genes[-the.dead.ind,]
-                    norm.genes.expr$AveLogCPM <-
-                        norm.genes.expr$AveLogCPM[-the.dead.ind]
-                },
-                matrix = { # Has been normalized with EDASeq or NOISeq
-                    norm.genes.expr <- norm.genes[-the.dead.ind,]
-                },
-                data.frame = { # Has been normalized with EDASeq or NOISeq
-                    norm.genes.expr <- as.matrix(norm.genes[-the.dead.ind,])
-                },
-                list = { # Has been normalized with NBPSeq, main.method="nbpseq"
-                    norm.genes.expr <- norm.genes
-                    norm.genes.expr$counts <-
-                        as.matrix(norm.genes.expr$counts[-the.dead.ind,])
-                    norm.genes.expr$rel.frequencies <- 
-                        norm.genes.expr$rel.frequencies[-the.dead.ind,]
-                    norm.genes.expr$tags <-
-                        as.matrix(norm.genes.expr$tags[-the.dead.ind,])
-                },
-                nbp = {
-                    norm.genes.expr <- norm.genes
-                    norm.genes.expr$counts <-
-                        as.matrix(norm.genes.expr$counts[-the.dead.ind,])
-                    norm.genes.expr$pseudo.counts <- 
-                        as.matrix(norm.genes.expr$pseudo.counts[-the.dead.ind,])
-                    norm.genes.expr$pseudo.lib.sizes <- 
-                        colSums(as.matrix(norm.genes.expr$pseudo.counts))*
-                            rep(1,dim(norm.genes.expr$counts)[2])
-                }
+                   CountDataSet = {
+                       norm.genes.expr <- norm.genes[-the.dead.ind,]
+                   },
+                   DGEList = { # edgeR bug???
+                       norm.genes.expr <- norm.genes[-the.dead.ind,]
+                       norm.genes.expr$AveLogCPM <-
+                           norm.genes.expr$AveLogCPM[-the.dead.ind]
+                   },
+                   matrix = { # Has been normalized with EDASeq or NOISeq
+                       norm.genes.expr <- norm.genes[-the.dead.ind,]
+                   },
+                   data.frame = { # Has been normalized with EDASeq or NOISeq
+                       norm.genes.expr <- as.matrix(norm.genes[-the.dead.ind,])
+                   },
+                   list = { # Has been normalized with NBPSeq, main.method="nbpseq"
+                       norm.genes.expr <- norm.genes
+                       norm.genes.expr$counts <-
+                           as.matrix(norm.genes.expr$counts[-the.dead.ind,])
+                       norm.genes.expr$rel.frequencies <- 
+                           norm.genes.expr$rel.frequencies[-the.dead.ind,]
+                       norm.genes.expr$tags <-
+                           as.matrix(norm.genes.expr$tags[-the.dead.ind,])
+                   },
+                   nbp = {
+                       norm.genes.expr <- norm.genes
+                       norm.genes.expr$counts <-
+                           as.matrix(norm.genes.expr$counts[-the.dead.ind,])
+                       norm.genes.expr$pseudo.counts <- 
+                           as.matrix(norm.genes.expr$pseudo.counts[-the.dead.ind,])
+                       norm.genes.expr$pseudo.lib.sizes <- 
+                           colSums(as.matrix(norm.genes.expr$pseudo.counts))*
+                           rep(1,dim(norm.genes.expr$counts)[2])
+                   }
             )
             gene.counts.expr <- gene.counts[rownames(norm.genes.expr),]
             gene.data.expr <- gene.data[-the.dead.ind,]
@@ -2224,23 +2224,23 @@ metaseqr <- function(
         disp(nrow(gene.data.filtered)," genes filtered out")
         if (!is.null(gene.data.zero) && nrow(gene.data.zero)>0)
             attr(gene.data.filtered,"gene.length") <- c(attr(gene.data.zero,
-                "gene.length"),attr(gene.data.dead,"gene.length"))
+                                                             "gene.length"),attr(gene.data.dead,"gene.length"))
         else
             attr(gene.data.filtered,"gene.length") <-
                 attr(gene.data.dead,"gene.length")
     }
     if (!is.null(gene.filters) || !is.null(exon.filters))
         disp(nrow(gene.data.expr)," genes remain after filtering")
-
+    
     ############################################################################
     # END FILTERING SECTION
     ############################################################################
-
+    
     # There is a small case that no genes are left after filtering...
     if(any(dim(norm.genes.expr)==0))
         stopwrap("No genes left after gene and/or exon filtering! Try again ",
-            "with no filtering or less strict filter rules...")
-
+                 "with no filtering or less strict filter rules...")
+    
     if (is.function(progress.fun)) {
         text <- paste("Statistical testing...")
         progress.fun(detail=text)
@@ -2260,72 +2260,72 @@ metaseqr <- function(
     {
         disp("Running statistical tests with: ",alg)    
         switch(alg,
-            deseq = {
-                p.list <- stat.deseq(norm.genes.expr,sample.list,contrast.list,
-                    stat.args[[alg]])
-                if (!is.na(pcut)) {
-                    for (con in names(contrast.list))
-                        disp("  Contrast ",con,": found ",
-                            length(which(p.list[[con]]<=pcut))," genes")
-                }
-            },
-            edger = {
-                p.list <- stat.edger(norm.genes.expr,sample.list,contrast.list,
-                    stat.args[[alg]])
-                if (!is.na(pcut)) {
-                    for (con in names(contrast.list))
-                        disp("  Contrast ",con,": found ",
-                            length(which(p.list[[con]]<=pcut))," genes")
-                }
-            },
-            noiseq = {
-                p.list <- stat.noiseq(norm.genes.expr,sample.list,contrast.list,
-                    stat.args[[alg]],gene.data.expr,log.offset)
-                if (!is.na(pcut)) {
-                    for (con in names(contrast.list))
-                        disp("  Contrast ",con,": found ",
-                            length(which(p.list[[con]]<=pcut))," genes")
-                }
-            },
-            bayseq = {
-                p.list <- stat.bayseq(norm.genes.expr,sample.list,contrast.list,
-                    stat.args[[alg]],libsize.list)
-                if (!is.na(pcut)) {
-                    for (con in names(contrast.list))
-                        disp("  Contrast ",con,": found ",
-                            length(which(p.list[[con]]<=pcut))," genes")
-                }
-            },
-            limma = {
-                p.list <- stat.limma(norm.genes.expr,sample.list,contrast.list,
-                    stat.args[[alg]])
-                if (!is.na(pcut)) {
-                    for (con in names(contrast.list))
-                        disp("  Contrast ",con,": found ",
-                            length(which(p.list[[con]]<=pcut))," genes")
-                }
-            },
-            nbpseq = {
-                p.list <- stat.nbpseq(norm.genes.expr,sample.list,contrast.list,
-                    stat.args[[alg]],libsize.list)
-                if (!is.na(pcut)) {
-                    for (con in names(contrast.list))
-                        disp("  Contrast ",con,": found ",
-                            length(which(p.list[[con]]<=pcut))," genes")
-                }
-            }
+               deseq = {
+                   p.list <- stat.deseq(norm.genes.expr,sample.list,contrast.list,
+                                        stat.args[[alg]])
+                   if (!is.na(pcut)) {
+                       for (con in names(contrast.list))
+                           disp("  Contrast ",con,": found ",
+                                length(which(p.list[[con]]<=pcut))," genes")
+                   }
+               },
+               edger = {
+                   p.list <- stat.edger(norm.genes.expr,sample.list,contrast.list,
+                                        stat.args[[alg]])
+                   if (!is.na(pcut)) {
+                       for (con in names(contrast.list))
+                           disp("  Contrast ",con,": found ",
+                                length(which(p.list[[con]]<=pcut))," genes")
+                   }
+               },
+               noiseq = {
+                   p.list <- stat.noiseq(norm.genes.expr,sample.list,contrast.list,
+                                         stat.args[[alg]],gene.data.expr,log.offset)
+                   if (!is.na(pcut)) {
+                       for (con in names(contrast.list))
+                           disp("  Contrast ",con,": found ",
+                                length(which(p.list[[con]]<=pcut))," genes")
+                   }
+               },
+               bayseq = {
+                   p.list <- stat.bayseq(norm.genes.expr,sample.list,contrast.list,
+                                         stat.args[[alg]],libsize.list)
+                   if (!is.na(pcut)) {
+                       for (con in names(contrast.list))
+                           disp("  Contrast ",con,": found ",
+                                length(which(p.list[[con]]<=pcut))," genes")
+                   }
+               },
+               limma = {
+                   p.list <- stat.limma(norm.genes.expr,sample.list,contrast.list,
+                                        stat.args[[alg]])
+                   if (!is.na(pcut)) {
+                       for (con in names(contrast.list))
+                           disp("  Contrast ",con,": found ",
+                                length(which(p.list[[con]]<=pcut))," genes")
+                   }
+               },
+               nbpseq = {
+                   p.list <- stat.nbpseq(norm.genes.expr,sample.list,contrast.list,
+                                         stat.args[[alg]],libsize.list)
+                   if (!is.na(pcut)) {
+                       for (con in names(contrast.list))
+                           disp("  Contrast ",con,": found ",
+                                length(which(p.list[[con]]<=pcut))," genes")
+                   }
+               }
         )
         for (n in names(p.list))
             cp.list[[n]][[alg]] <- p.list[[n]]
     }
     for (n in names(cp.list))
         cp.list[[n]] <- do.call("cbind",cp.list[[n]])
-
+    
     # Create the adjusted p-value matrices (if needed)
     if ("adj.p.value" %in% export.what)
     {
         adj.cp.list <- wapply(multic,cp.list,
-            function(x,a) return(apply(x,2,p.adjust,a)),adjust.method)
+                              function(x,a) return(apply(x,2,custom.p.adjust,a)),adjust.method)
         for (n in names(cp.list))
         {
             noi <- grep("noiseq",colnames(cp.list[[n]]))
@@ -2339,51 +2339,51 @@ metaseqr <- function(
     }
     else
         adj.cp.list <- NULL
-
+    
     # At this point, all method-specific objects must become matrices for exporting 
     # and plotting
     switch(class(norm.genes.expr),
-        CountDataSet = { # Has been processed with DESeq
-            norm.genes <- round(counts(norm.genes,normalized=TRUE))
-            norm.genes.expr <- round(counts(norm.genes.expr,normalized=TRUE))
-        },
-        DGEList = { # Has been processed with edgeR
-            # Trick found at http://cgrlucb.wikispaces.com/edgeR+spring2013
-            scl.r <- norm.genes$samples$lib.size*norm.genes$samples$norm.factors
-            norm.genes <- round(t(t(norm.genes$counts)/scl.r)*mean(scl.r))
-            scl.n <- norm.genes.expr$samples$lib.size *
-                norm.genes.expr$samples$norm.factors
-            norm.genes.expr <- round(t(t(norm.genes.expr$counts)/scl.n) *
-                mean(scl.n))
-        },
-        list = {
-            norm.genes <- as.matrix(round(sweep(norm.genes$counts,2,
-                norm.genes$norm.factors,"*")))
-            norm.genes.expr <- as.matrix(round(sweep(norm.genes.expr$counts,2,
-                norm.genes$norm.factors,"*")))
-        },
-        nbp = {
-            norm.genes <- as.matrix(round(norm.genes$pseudo.counts))
-            norm.genes.expr <- as.matrix(round(norm.genes.expr$pseudo.counts))
-        }
-        # We don't need the matrix case
+           CountDataSet = { # Has been processed with DESeq
+               norm.genes <- round(counts(norm.genes,normalized=TRUE))
+               norm.genes.expr <- round(counts(norm.genes.expr,normalized=TRUE))
+           },
+           DGEList = { # Has been processed with edgeR
+               # Trick found at http://cgrlucb.wikispaces.com/edgeR+spring2013
+               scl.r <- norm.genes$samples$lib.size*norm.genes$samples$norm.factors
+               norm.genes <- round(t(t(norm.genes$counts)/scl.r)*mean(scl.r))
+               scl.n <- norm.genes.expr$samples$lib.size *
+                   norm.genes.expr$samples$norm.factors
+               norm.genes.expr <- round(t(t(norm.genes.expr$counts)/scl.n) *
+                                            mean(scl.n))
+           },
+           list = {
+               norm.genes <- as.matrix(round(sweep(norm.genes$counts,2,
+                                                   norm.genes$norm.factors,"*")))
+               norm.genes.expr <- as.matrix(round(sweep(norm.genes.expr$counts,2,
+                                                        norm.genes$norm.factors,"*")))
+           },
+           nbp = {
+               norm.genes <- as.matrix(round(norm.genes$pseudo.counts))
+               norm.genes.expr <- as.matrix(round(norm.genes.expr$pseudo.counts))
+           }
+           # We don't need the matrix case
     )
-
+    
     # Now that everything is a matrix, export the normalized counts if asked
     if (export.counts.table) {
         disp("Exporting and compressing normalized read counts table to ",
-            file.path(PROJECT.PATH[["lists"]],"normalized_counts_table.txt"))
+             file.path(PROJECT.PATH[["lists"]],"normalized_counts_table.txt"))
         expo <- cbind(
             rbind(gene.data.expr,gene.data.filtered),
             rbind(norm.genes.expr,gene.counts.zero,gene.counts.dead)
         )
         res.file <- file.path(PROJECT.PATH[["lists"]],
-            "normalized_counts_table.txt.gz")
+                              "normalized_counts_table.txt.gz")
         gzfh <- gzfile(res.file,"w")
         write.table(expo,gzfh,sep="\t",row.names=FALSE,quote=FALSE)
         close(gzfh)
     }
-
+    
     # Calculate meta-statistics, if more than one statistical algorithm has been used
     if (length(statistics)>1)
     {
@@ -2408,19 +2408,19 @@ metaseqr <- function(
     # Useless for one statistics but just for safety
     if ("adj.meta.p.value" %in% export.what) 
         adj.sum.p.list <- wapply(multic,sum.p.list,
-            function(x,a) return(p.adjust(x,a)),adjust.method)
+                                 function(x,a) return(custom.p.adjust(x,a)),adjust.method)
     else
         adj.sum.p.list <- NULL
-
+    
     ############################################################################
     # BEGIN EXPORT SECTION
     ############################################################################
-
+    
     if (is.function(progress.fun)) {
         text <- paste("Exporting...")
         progress.fun(detail=text)
     }
-
+    
     # Bind all the flags
     if (count.type=="gene")
         flags <- gene.filter.flags
@@ -2431,7 +2431,7 @@ metaseqr <- function(
         if (!is.null(exon.filter.flags))
         {
             flags <- cbind(gene.filter.flags,
-                as.matrix(exon.filter.flags[rownames(gene.filter.flags),]))
+                           as.matrix(exon.filter.flags[rownames(gene.filter.flags),]))
             nams <- c(colnames(gene.filter.flags),colnames(exon.filter.flags))
             rownames(flags) <- rownames(gene.filter.flags)
             colnames(flags) <- nams
@@ -2450,14 +2450,14 @@ metaseqr <- function(
     if ("normalized" %in% export.values) {
         fac <- fa[rownames(norm.genes.expr)]
         norm.list <- make.transformation(norm.genes.expr,export.scale,fac,
-            log.offset)
+                                         log.offset)
     }
     else
         norm.list <- NULL
     if ("raw" %in% export.values) {
         fac <- fa[rownames(gene.counts.expr)]
         raw.list <- make.transformation(gene.counts.expr,export.scale,fac,
-            log.offset)
+                                        log.offset)
     }
     else
         raw.list <- NULL
@@ -2465,16 +2465,16 @@ metaseqr <- function(
         good.flags <- flags[rownames(norm.genes.expr),]
     else
         good.flags <- NULL
-
+    
     if (!is.null(gene.counts.zero) || !is.null(gene.counts.dead))
     {
         gene.counts.filtered <- rbind(gene.counts.zero,gene.counts.dead)
         gene.counts.unnorm.filtered <- rbind(gene.counts.zero,
-            gene.counts.unnorm)
+                                             gene.counts.unnorm)
         if ("normalized" %in% export.values) {
             fac <- fa[rownames(gene.counts.filtered)]
             norm.list.filtered <- make.transformation(gene.counts.filtered,
-                export.scale,fac,log.offset)
+                                                      export.scale,fac,log.offset)
         }
         else
             norm.list.filtered <- NULL
@@ -2488,7 +2488,7 @@ metaseqr <- function(
         if ("flags" %in% export.what && !is.null(flags))
             all.flags <- rbind(
                 matrix(1,nrow(gene.counts.zero),ncol(flags)),
-                    flags[rownames(gene.counts.dead),]
+                flags[rownames(gene.counts.dead),]
             )
         else
             all.flags <- NULL
@@ -2525,7 +2525,7 @@ metaseqr <- function(
             log.offset=log.offset,
             report=report
         )
-
+        
         # Adjust the export based on what statistics have been done and a possible 
         # p-value cutoff
         export <- the.export$text.table
@@ -2536,42 +2536,42 @@ metaseqr <- function(
             if (length(statistics)>1)
             {
                 switch(meta.p,
-                    fisher = {
-                        cut.ind <- which(sum.p.list[[cnt]]<=pcut)
-                    },
-                    fperm = {
-                        cut.ind <- which(sum.p.list[[cnt]]<=pcut)
-                    },
-                    whitlock = {
-                        cut.ind <- which(sum.p.list[[cnt]]<=pcut)
-                    },
-                    dperm.min = {
-                        cut.ind <- which(sum.p.list[[cnt]]<=pcut)
-                    },
-                    dperm.max = {
-                        cut.ind <- which(sum.p.list[[cnt]]<=pcut)
-                    },
-                    dperm.weight = {
-                        cut.ind <- which(sum.p.list[[cnt]]<=pcut)
-                    },
-                    minp = {
-                        cut.ind <- which(sum.p.list[[cnt]]<=pcut)
-                    },
-                    maxp = {
-                        cut.ind <- which(sum.p.list[[cnt]]<=pcut)
-                    },
-                    weight = {
-                        cut.ind <- which(sum.p.list[[cnt]]<=pcut)
-                    },
-                    pandora = {
-                        cut.ind <- which(sum.p.list[[cnt]]<=pcut)
-                    },
-                    simes = {
-                        cut.ind <- which(sum.p.list[[cnt]]<=pcut)
-                    },
-                    none = {
-                        cut.ind <- which(sum.p.list[[cnt]]<=pcut)
-                    }
+                       fisher = {
+                           cut.ind <- which(sum.p.list[[cnt]]<=pcut)
+                       },
+                       fperm = {
+                           cut.ind <- which(sum.p.list[[cnt]]<=pcut)
+                       },
+                       whitlock = {
+                           cut.ind <- which(sum.p.list[[cnt]]<=pcut)
+                       },
+                       dperm.min = {
+                           cut.ind <- which(sum.p.list[[cnt]]<=pcut)
+                       },
+                       dperm.max = {
+                           cut.ind <- which(sum.p.list[[cnt]]<=pcut)
+                       },
+                       dperm.weight = {
+                           cut.ind <- which(sum.p.list[[cnt]]<=pcut)
+                       },
+                       minp = {
+                           cut.ind <- which(sum.p.list[[cnt]]<=pcut)
+                       },
+                       maxp = {
+                           cut.ind <- which(sum.p.list[[cnt]]<=pcut)
+                       },
+                       weight = {
+                           cut.ind <- which(sum.p.list[[cnt]]<=pcut)
+                       },
+                       pandora = {
+                           cut.ind <- which(sum.p.list[[cnt]]<=pcut)
+                       },
+                       simes = {
+                           cut.ind <- which(sum.p.list[[cnt]]<=pcut)
+                       },
+                       none = {
+                           cut.ind <- which(sum.p.list[[cnt]]<=pcut)
+                       }
                 )
                 pp <- sum.p.list[[cnt]][cut.ind]
                 export <- export[cut.ind,]
@@ -2602,7 +2602,7 @@ metaseqr <- function(
             if (report)
                 export.html <- export.html[order(pp),]
         }
-
+        
         # Final safety trigger
         na.ind <- grep("NA",rownames(export))
         if (length(na.ind)>0)
@@ -2610,9 +2610,9 @@ metaseqr <- function(
             export <- export[-na.ind,]
             if (report) export.html <- export.html[-na.ind,]
         }
-
+        
         res.file <- file.path(PROJECT.PATH[["lists"]],
-            paste("metaseqr_sig_out_",cnt,".txt.gz",sep=""))
+                              paste("metaseqr_sig_out_",cnt,".txt.gz",sep=""))
         disp("    Writing output...")
         gzfh <- gzfile(res.file,"w")
         write.table(export,gzfh,quote=FALSE,row.names=FALSE,sep="\t")
@@ -2630,11 +2630,11 @@ metaseqr <- function(
                 the.html.rows <- make.html.rows(export.html)
             the.html.body <- make.html.body(the.html.rows)
             the.html.table <- make.html.table(the.html.body,the.html.header,
-                id=paste("table_",counter,sep=""))
+                                              id=paste("table_",counter,sep=""))
             html[[cnt]] <- the.html.table
             counter <- counter+1
         }
-
+        
         if (!is.null(gene.counts.zero) || !is.null(gene.counts.dead))
         {
             disp("    Adding filtered data...")
@@ -2655,17 +2655,17 @@ metaseqr <- function(
                 log.offset=log.offset,
                 report=FALSE
             )
-
+            
             # Now we should be having the.export and the.export.filtered. We do not 
             # generate html output for filtered or total results just a compressed
             # text file. We thus have to append the.export$text.table and 
             # the.export.filtered$html.table before writing the final output...
             export.all <- rbind(the.export$text.table,
-                the.export.filtered$text.table)
+                                the.export.filtered$text.table)
             # ...and order them somehow... alphabetically according to row names, as
             # the annotation might not have been bundled...
             export.all <- export.all[order(rownames(export.all)),]
-
+            
             res.file <- file.path(PROJECT.PATH[["lists"]],paste(
                 "metaseqr_all_out_",cnt,".txt.gz",sep=""))
             disp("    Writing output...")
@@ -2674,11 +2674,11 @@ metaseqr <- function(
             close(gzfh)
         }
     }
-
+    
     ############################################################################
     # END EXPORT SECTION
     ############################################################################
-
+    
     ############################################################################
     # BEGIN PLOTTING SECTION
     ############################################################################
@@ -2693,9 +2693,9 @@ metaseqr <- function(
         disp("Creating quality control graphs...")
         plots <- list(
             raw=c("mds","biodetection","countsbio","saturation","readnoise",
-                "correl","pairwise"),
+                  "correl","pairwise"),
             norm=c("boxplot","gcbias","lengthbias","meandiff","meanvar",
-                "rnacomp"),
+                   "rnacomp"),
             stat=c("deheatmap","volcano","biodist"),
             other=c("filtered"),
             venn=c("venn")
@@ -2709,47 +2709,47 @@ metaseqr <- function(
         {
             disp("Plotting in ",fig," format...")
             fig.raw[[fig]] <- diagplot.metaseqr(gene.counts,sample.list,
-                annotation=gene.data,diagplot.type=intersect(qc.plots,
-                plots$raw),is.norm=FALSE,output=fig,path=PROJECT.PATH$qc)
+                                                annotation=gene.data,diagplot.type=intersect(qc.plots,
+                                                                                             plots$raw),is.norm=FALSE,output=fig,path=PROJECT.PATH$qc)
             fig.unorm[[fig]] <- diagplot.metaseqr(gene.counts,sample.list,
-                annotation=gene.data,diagplot.type=intersect(qc.plots,
-                plots$norm),is.norm=FALSE,output=fig,
-                path=PROJECT.PATH$normalization)
+                                                  annotation=gene.data,diagplot.type=intersect(qc.plots,
+                                                                                               plots$norm),is.norm=FALSE,output=fig,
+                                                  path=PROJECT.PATH$normalization)
             if (when.apply.filter=="prenorm") # The annotation dimensions change...
                 fig.norm[[fig]] <- diagplot.metaseqr(norm.genes,sample.list,
-                    annotation=gene.data.expr,diagplot.type=intersect(qc.plots,
-                    plots$norm),is.norm=TRUE,output=fig,
-                    path=PROJECT.PATH$normalization) 
+                                                     annotation=gene.data.expr,diagplot.type=intersect(qc.plots,
+                                                                                                       plots$norm),is.norm=TRUE,output=fig,
+                                                     path=PROJECT.PATH$normalization) 
             else if (when.apply.filter=="postnorm")
                 fig.norm[[fig]] <- diagplot.metaseqr(norm.genes,sample.list,
-                    annotation=gene.data,diagplot.type=intersect(qc.plots,
-                    plots$norm),is.norm=TRUE,output=fig,
-                    path=PROJECT.PATH$normalization)
+                                                     annotation=gene.data,diagplot.type=intersect(qc.plots,
+                                                                                                  plots$norm),is.norm=TRUE,output=fig,
+                                                     path=PROJECT.PATH$normalization)
             fig.stat[[fig]] <- diagplot.metaseqr(norm.genes.expr,sample.list,
-                annotation=gene.data.expr,contrast.list=contrast.list,
-                p.list=sum.p.list,thresholds=list(p=pcut,f=1),
-                diagplot.type=intersect(qc.plots,plots$stat),is.norm=TRUE,
-                output=fig,path=PROJECT.PATH$statistics)
+                                                 annotation=gene.data.expr,contrast.list=contrast.list,
+                                                 p.list=sum.p.list,thresholds=list(p=pcut,f=1),
+                                                 diagplot.type=intersect(qc.plots,plots$stat),is.norm=TRUE,
+                                                 output=fig,path=PROJECT.PATH$statistics)
             if (!is.null(gene.data.filtered))
                 fig.other[[fig]] <- diagplot.metaseqr(gene.data.filtered,
-                    sample.list,annotation=total.gene.data,
-                    diagplot.type=intersect(qc.plots,plots$other),
-                    is.norm=FALSE,output=fig,path=PROJECT.PATH$qc)
+                                                      sample.list,annotation=total.gene.data,
+                                                      diagplot.type=intersect(qc.plots,plots$other),
+                                                      is.norm=FALSE,output=fig,path=PROJECT.PATH$qc)
             else fig.other[[fig]] <- NULL
             if ("venn" %in% qc.plots)
                 fig.venn[[fig]] <- diagplot.metaseqr(norm.genes.expr,
-                    sample.list,annotation=gene.data.expr,
-                    contrast.list=contrast.list,
-                    p.list=cp.list,thresholds=list(p=pcut,f=1),
-                    diagplot.type=intersect(qc.plots,plots$venn),
-                    output=fig,path=PROJECT.PATH$statistics)
+                                                     sample.list,annotation=gene.data.expr,
+                                                     contrast.list=contrast.list,
+                                                     p.list=cp.list,thresholds=list(p=pcut,f=1),
+                                                     diagplot.type=intersect(qc.plots,plots$venn),
+                                                     output=fig,path=PROJECT.PATH$statistics)
         }
     }
-
+    
     ############################################################################
     # END PLOTTING SECTION
     ############################################################################
-
+    
     ############################################################################
     # BEGIN REPORTING SECTION
     ############################################################################
@@ -2762,7 +2762,7 @@ metaseqr <- function(
             # First create zip archives of the figures
             disp("Compressing figures...")
             zipfiles <- file.path(PROJECT.PATH$plots,paste("metaseqr_figures_",
-                fig.format,".zip",sep=""))
+                                                           fig.format,".zip",sep=""))
             names(zipfiles) <- fig.format
             for (f in fig.format)
             {
@@ -2787,7 +2787,7 @@ metaseqr <- function(
         else
             fig.raw <- fig.unorm <- fig.norm <- fig.stat <- fig.other <-
                 fig.venn <- NULL
-
+        
         if (tolower(report.template)=="default")
         {
             if (exists("TEMPLATE"))
@@ -2795,15 +2795,15 @@ metaseqr <- function(
                 report.template=list(
                     html=file.path(TEMPLATE,"metaseqr_report.html"),
                     css=file.path(TEMPLATE,"styles.css"),
+                    js=file.path(TEMPLATE,"scripts.js"),
                     logo=file.path(TEMPLATE,"logo.png"),
                     loader=file.path(TEMPLATE,"loader.gif")
                 )
             }
             else
-                report.template=list(html=NULL,css=NULL,logo=NULL,
-                    loader=NULL)
+                report.template=list(html=NULL,css=NULL,logo=NULL,js=NULL,loader=NULL)
         }
-
+        
         if (!is.null(report.template$html))
         {
             if (file.exists(report.template$html))
@@ -2814,14 +2814,14 @@ metaseqr <- function(
             else
             {
                 warnwrap(paste("The template file",report.template$html,
-                    "was not ","found! The HTML report will NOT be generated."))
+                               "was not ","found! The HTML report will NOT be generated."))
                 has.template <- FALSE
             }
         }
         else
         {
             warnwrap(paste("The report option was enabled but no template ",
-                "file is provided! The HTML report will NOT be generated."))
+                           "file is provided! The HTML report will NOT be generated."))
             has.template <- FALSE
         }
         if (!is.null(report.template$css))
@@ -2830,18 +2830,29 @@ metaseqr <- function(
                 file.copy(from=report.template$css,to=PROJECT.PATH$media)
             else
                 warnwrap(paste("The stylesheet file",report.template$css,
-                    "was not ","found! The HTML report will NOT be styled."))
+                               "was not ","found! The HTML report will NOT be styled."))
         }
         else
             warnwrap(paste("The report stylesheet file was not provided! The ",
-                "HTML report will NOT be styled."))
+                           "HTML report will NOT be styled."))
+        if (!is.null(report.template$js))
+        {
+            if (file.exists(report.template$js))
+                file.copy(from=report.template$js,to=PROJECT.PATH$media)
+            else
+                warnwrap(paste("The javascript file",report.template$js,
+                               "was not ","found! The HTML report will NOT work correctly."))
+        }
+        else
+            warnwrap(paste("The report javascript file was not provided! The ",
+                           "HTML report will NOT work correctly."))
         if (!is.null(report.template$logo))
         {
             if (file.exists(report.template$logo))
                 file.copy(from=report.template$logo,to=PROJECT.PATH$media)
             else
                 warnwrap(paste("The report logo image",report.template$logo,
-                    "was not found!"))
+                               "was not found!"))
         }
         else
             warnwrap(paste("The report logo image was not provided!"))
@@ -2851,7 +2862,7 @@ metaseqr <- function(
                 file.copy(from=report.template$loader,to=PROJECT.PATH$media)
             else
                 warnwrap(paste("The report logo image",report.template$loader,
-                    "was not found!"))
+                               "was not found!"))
         }
         else
             warnwrap(paste("The report loader image was not provided!"))
@@ -2866,9 +2877,14 @@ metaseqr <- function(
                 output=file.path(PROJECT.PATH$main,"index.html"),
                 envir=TEMP
             )
+            # return (list(
+            #     file=report.template$html,
+            #     output=file.path(PROJECT.PATH$main,"index.html"),
+            #     envir=TEMP
+            # ))
         }
     }
-
+    
     ############################################################################
     # END REPORTING SECTION
     ############################################################################
@@ -2880,7 +2896,7 @@ metaseqr <- function(
     if (out.list) {
         tmp <- rbind(gene.data.expr,gene.data.filtered)
         a <- c(attr(gene.data.expr,"gene.length"),
-            attr(gene.data.filtered,"gene.length"))
+               attr(gene.data.filtered,"gene.length"))
         names(a) <- rownames(tmp)
         attr(tmp,"gene.length") <- a
         for (n in names(cp.list)) {
@@ -2898,7 +2914,7 @@ metaseqr <- function(
             for (n in names(adj.cp.list)) {
                 if (!is.null(gene.data.filtered)) {
                     filler <- matrix(NA,nrow(gene.data.filtered),
-                        ncol(adj.cp.list[[n]]))
+                                     ncol(adj.cp.list[[n]]))
                     rownames(filler) <- rownames(gene.data.filtered)
                     colnames(filler) <- colnames(cp.list[[n]])
                 }
@@ -2919,25 +2935,25 @@ metaseqr <- function(
                 if (is.matrix(sum.p.list[[n]])) {
                     sum.p.list[[n]] <- rbind(sum.p.list[[n]],as.matrix(filler))
                     sum.p.list[[n]] <- sum.p.list[[n]][rownames(tmp),,
-                        drop=FALSE]
+                                                       drop=FALSE]
                 }
                 else {
                     sum.p.list[[n]] <- c(sum.p.list[[n]],filler)
                     sum.p.list[[n]] <- sum.p.list[[n]][rownames(tmp)]
                 }
-           }
+            }
         }
         if (!is.null(adj.sum.p.list)) {
-           for (n in names(adj.sum.p.list)) {
-               if (!is.null(gene.data.filtered)) {
-                   filler <- rep(NA,nrow(gene.data.filtered))
-                   names(filler) <- rownames(gene.data.filtered)
-               }
-               else
-                   filler <- NULL
-               adj.sum.p.list[[n]] <- c(adj.sum.p.list[[n]],filler)
-               adj.sum.p.list[[n]] <- adj.sum.p.list[[n]][rownames(tmp)]
-           }
+            for (n in names(adj.sum.p.list)) {
+                if (!is.null(gene.data.filtered)) {
+                    filler <- rep(NA,nrow(gene.data.filtered))
+                    names(filler) <- rownames(gene.data.filtered)
+                }
+                else
+                    filler <- NULL
+                adj.sum.p.list[[n]] <- c(adj.sum.p.list[[n]],filler)
+                adj.sum.p.list[[n]] <- adj.sum.p.list[[n]][rownames(tmp)]
+            }
         }
         complete <- list(
             #call=as.list(match.call()),
@@ -3064,7 +3080,7 @@ metaseqr <- function(
 #'   multic)
 #'}
 construct.gene.model <- function(exon.counts,sample.list,
-    gene.data,multic=FALSE) {
+                                 gene.data,multic=FALSE) {
     the.counts <- vector("list",length(unlist(sample.list)))
     names(the.counts) <- unlist(sample.list,use.names=FALSE)
     the.genes <- as.character(unique(gene.data$gene_id))
@@ -3124,37 +3140,37 @@ construct.gene.model <- function(exon.counts,sample.list,
 #'   multic)
 #'}
 construct.utr.model <- function(utr.counts,sample.list,gene.data,
-	multic=FALSE) {
+                                multic=FALSE) {
     the.counts <- vector("list",length(unlist(sample.list)))
     names(the.counts) <- unlist(sample.list,use.names=FALSE)
     #if (trans.level=="gene")
-		the.genes <- as.character(unique(gene.data$gene_id))
-	#else if (trans.level=="transcript")
-	#	the.genes <- as.character(unique(gene.data$transcript_id))
+    the.genes <- as.character(unique(gene.data$gene_id))
+    #else if (trans.level=="transcript")
+    #	the.genes <- as.character(unique(gene.data$transcript_id))
     for (n in names(the.counts))
     {
         disp("  Separating transcripts (UTR regions) per for ",n,"...")
         the.counts[[n]] <- the.genes
         names(the.counts[[n]]) <- the.genes
         #if (trans.level=="gene") {
-			the.counts[[n]] <- wapply(multic,the.counts[[n]],function(x,d,n) {
-				tmp <- d[which(d$gene_id==x),c("start","end","transcript_id",n)]
-				xx <- tmp[,n]
-				yy <- tmp$end - tmp$start
-				names(xx) <- names(yy) <- tmp$transcript_id
-				return(list(count=xx,length=yy))
-			},utr.counts,n)
-		#}
-		#else if (trans.level=="transcript") {
-		#	the.counts[[n]] <- wapply(multic,the.counts[[n]],function(x,d,n) {
-		#		tmp <- d[which(d$transcript_id==x),
-		#			c("start","end","transcript_id",n)]
-		#		xx <- tmp[,n]
-		#		yy <- tmp$end - tmp$start
-		#		names(xx) <- names(yy) <- tmp$transcript_id
-		#		return(list(count=xx,length=yy))
-		#	},utr.counts,n)
-		#}
+        the.counts[[n]] <- wapply(multic,the.counts[[n]],function(x,d,n) {
+            tmp <- d[which(d$gene_id==x),c("start","end","transcript_id",n)]
+            xx <- tmp[,n]
+            yy <- tmp$end - tmp$start
+            names(xx) <- names(yy) <- tmp$transcript_id
+            return(list(count=xx,length=yy))
+        },utr.counts,n)
+        #}
+        #else if (trans.level=="transcript") {
+        #	the.counts[[n]] <- wapply(multic,the.counts[[n]],function(x,d,n) {
+        #		tmp <- d[which(d$transcript_id==x),
+        #			c("start","end","transcript_id",n)]
+        #		xx <- tmp[,n]
+        #		yy <- tmp$end - tmp$start
+        #		names(xx) <- names(yy) <- tmp$transcript_id
+        #		return(list(count=xx,length=yy))
+        #	},utr.counts,n)
+        #}
     }
     return(the.counts)
 }

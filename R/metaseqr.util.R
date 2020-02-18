@@ -1762,9 +1762,9 @@ make.html.body <- function(mat) {
 #'}
 make.html.table <- function(b,h=NULL,id=NULL) {
     if (!is.null(id))
-        html <- paste("<table id=\"",id,"\" class=\"datatable\">",sep="")
+        html <- paste("<table id=\"",id,"\" class=\"table table-striped table-hover datatable\">",sep="")
     else
-        html <- "<table class=\"datatable\">"
+        html <- "<table class=\"table table-striped table-hover datatable\">"
     if (!is.null(h))
         html <- paste(html,"<thead>",h,"</thead>",sep="")
     html <- paste(html,"<tbody>",b,"</tbody></table>",sep="")
@@ -3257,3 +3257,11 @@ metaseqR.version <- function() {
 #        rownames(ann) <- ann$exon_id
 #    return(ann)
 #}
+
+custom.p.adjust <- function (p, m) {
+  if (m == "qvalue") {
+    return (qvalue(p)$qvalues)
+  } else {
+    return (p.adjust(p, m))
+  }
+}
