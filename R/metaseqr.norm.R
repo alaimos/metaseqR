@@ -42,7 +42,7 @@
 #' diagplot.boxplot(norm.data.matrix,sample.list)
 #'}
 normalize.edaseq <- function(gene.counts,sample.list,norm.args=NULL,
-    gene.data=NULL,output=c("matrix","native")) {
+                             gene.data=NULL,output=c("matrix","native")) {
     if (is.null(norm.args))
         norm.args <- get.defaults("normalization","edaseq")
     if (!is.matrix(gene.counts))
@@ -69,8 +69,8 @@ normalize.edaseq <- function(gene.counts,sample.list,norm.args=NULL,
             )
         )
         seq.genes <- betweenLaneNormalization(withinLaneNormalization(seq.genes,
-            "length",which=norm.args$within.which),
-            which=norm.args$between.which)
+                                                                      "length",which=norm.args$within.which),
+                                              which=norm.args$between.which)
     }
     else {
         seq.genes <- newSeqExpressionSet(
@@ -90,7 +90,7 @@ normalize.edaseq <- function(gene.counts,sample.list,norm.args=NULL,
             )
         )
         seq.genes <- betweenLaneNormalization(withinLaneNormalization(seq.genes,
-            "gc",which=norm.args$within.which),which=norm.args$between.which)
+                                                                      "gc",which=norm.args$within.which),which=norm.args$between.which)
     }
     if (output=="matrix")
         return(exprs(seq.genes)) # Class: matrix
@@ -131,13 +131,13 @@ normalize.edaseq <- function(gene.counts,sample.list,norm.args=NULL,
 #' diagplot.boxplot(norm.data.matrix,sample.list)
 #'}
 normalize.deseq <- function(gene.counts,sample.list,norm.args=NULL,
-    output=c("matrix","native")) {
+                            output=c("matrix","native")) {
     if (is.null(norm.args))
         norm.args <- get.defaults("normalization","deseq")
     output <- tolower(output[1])
     check.text.args("output",output,c("matrix","native"))
     classes <- as.class.vector(sample.list)
-    cds <- newCountDataSet(gene.counts,classes)
+    cds <- build.deseq.dds(gene.counts,classes)
     cds <- estimateSizeFactors(cds, locfunc=norm.args$locfunc)
     if (output=="native")
         return(cds) # Class: DESeqDataSet
@@ -178,7 +178,7 @@ normalize.deseq <- function(gene.counts,sample.list,norm.args=NULL,
 #' diagplot.boxplot(norm.data.matrix,sample.list)
 #'}
 normalize.edger <- function(gene.counts,sample.list,norm.args=NULL,
-    output=c("matrix","native")) {
+                            output=c("matrix","native")) {
     if (is.null(norm.args))
         norm.args <- get.defaults("normalization","edger")
     output <- tolower(output[1])
@@ -186,9 +186,9 @@ normalize.edger <- function(gene.counts,sample.list,norm.args=NULL,
     classes <- as.class.vector(sample.list)
     dge <- DGEList(counts=gene.counts,group=classes)
     dge <- calcNormFactors(dge,method=norm.args$method,
-        refColumn=norm.args$refColumn,logratioTrim=norm.args$logratioTrim,
-        sumTrim=norm.args$sumTrim,doWeighting=norm.args$doWeighting,
-        Acutoff=norm.args$Acutoff,p=norm.args$p)
+                           refColumn=norm.args$refColumn,logratioTrim=norm.args$logratioTrim,
+                           sumTrim=norm.args$sumTrim,doWeighting=norm.args$doWeighting,
+                           Acutoff=norm.args$Acutoff,p=norm.args$p)
     if (output=="native")
         return(dge) # Class: DGEList
     else if (output=="matrix") {
@@ -244,7 +244,7 @@ normalize.edger <- function(gene.counts,sample.list,norm.args=NULL,
 #' diagplot.boxplot(norm.data.matrix,sample.list)
 #'}
 normalize.noiseq <- function(gene.counts,sample.list,norm.args=NULL,
-    gene.data=NULL,log.offset=1,output=c("matrix","native")) {
+                             gene.data=NULL,log.offset=1,output=c("matrix","native")) {
     if (is.null(norm.args))
         norm.args <- get.defaults("normalization","noiseq")
     output <- tolower(output[1])
@@ -274,28 +274,28 @@ normalize.noiseq <- function(gene.counts,sample.list,norm.args=NULL,
     }
     norm.args$k=log.offset # Set the zero fixing constant
     switch(norm.args$method,
-        rpkm = {
-            #M <- NOISeq::rpkm(assayData(ns.obj)$exprs,long=norm.args$long,
-            #    k=norm.args$k,lc=norm.args$lc)
-            M <- rpkm(assayData(ns.obj)$exprs,gene.length=norm.args$long)
-        },
-        uqua = {
-            M <- NOISeq::uqua(assayData(ns.obj)$exprs,long=norm.args$long,
-                k=norm.args$k,lc=norm.args$lc)
-        },
-        tmm = {
-            M <- NOISeq::tmm(assayData(ns.obj)$exprs,long=norm.args$long,
-                k=norm.args$k,lc=norm.args$lc,refColumn=norm.args$refColumn,
-                logratioTrim=norm.args$logratioTrim,sumTrim=norm.args$sumTrim,
-                doWeighting=norm.args$doWeighting,Acutoff=norm.args$Acutoff)
-        }
+           rpkm = {
+               #M <- NOISeq::rpkm(assayData(ns.obj)$exprs,long=norm.args$long,
+               #    k=norm.args$k,lc=norm.args$lc)
+               M <- rpkm(assayData(ns.obj)$exprs,gene.length=norm.args$long)
+           },
+           uqua = {
+               M <- NOISeq::uqua(assayData(ns.obj)$exprs,long=norm.args$long,
+                                 k=norm.args$k,lc=norm.args$lc)
+           },
+           tmm = {
+               M <- NOISeq::tmm(assayData(ns.obj)$exprs,long=norm.args$long,
+                                k=norm.args$k,lc=norm.args$lc,refColumn=norm.args$refColumn,
+                                logratioTrim=norm.args$logratioTrim,sumTrim=norm.args$sumTrim,
+                                doWeighting=norm.args$doWeighting,Acutoff=norm.args$Acutoff)
+           }
     )
     if (output=="native") {
         if (is.null(gene.data))
             return(NOISeq::readData(
-            data=M,
-            factors=data.frame(class=classes)
-        )) # Class: CD
+                data=M,
+                factors=data.frame(class=classes)
+            )) # Class: CD
         else    
             return(NOISeq::readData(
                 data=M,
@@ -348,7 +348,7 @@ normalize.noiseq <- function(gene.counts,sample.list,norm.args=NULL,
 #' diagplot.boxplot(norm.data.matrix,sample.list)
 #'}
 normalize.nbpseq <- function(gene.counts,sample.list,norm.args=NULL,
-    libsize.list=NULL,output=c("matrix","native")) {
+                             libsize.list=NULL,output=c("matrix","native")) {
     if (is.null(norm.args))
         norm.args <- get.defaults("normalization","nbpseq")
     output <- tolower(output[1])
@@ -362,13 +362,13 @@ normalize.nbpseq <- function(gene.counts,sample.list,norm.args=NULL,
     }
     lib.sizes <- unlist(libsize.list)
     norm.factors <- estimate.norm.factors(gene.counts,lib.sizes=lib.sizes,
-        method=norm.args$method)
+                                          method=norm.args$method)
     #if (norm.args$main.method=="nbpseq")
     #    nb.data <- prepare.nb.data(gene.counts,lib.sizes=lib.sizes,
     #    norm.factors=norm.factors)
     #else if (norm.args$main.method=="nbsmyth")
-        nb.data <- prepare.nbp(gene.counts,classes,lib.sizes=lib.sizes,
-            norm.factors=norm.factors,thinning=norm.args$thinning)
+    nb.data <- prepare.nbp(gene.counts,classes,lib.sizes=lib.sizes,
+                           norm.factors=norm.factors,thinning=norm.args$thinning)
     if (output=="native")
         return(nb.data) # Class: list or nbp
     else if (output=="matrix") {
@@ -378,7 +378,7 @@ normalize.nbpseq <- function(gene.counts,sample.list,norm.args=NULL,
         #        norm.counts[,i] <- norm.factors[i]*gene.counts[,i]
         #}
         #else if (norm.args$main.method=="nbsmyth") 
-            norm.counts <- nb.data$pseudo.counts
+        norm.counts <- nb.data$pseudo.counts
         return(as.matrix(round(norm.counts))) # Class: matrix
     }
 }

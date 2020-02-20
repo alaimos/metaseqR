@@ -54,6 +54,7 @@ stat.deseq <- function(object,sample.list,contrast.list=NULL,stat.args=NULL) {
     else {
         fitType.disp <- stat.args$fitType
     }
+    disp("")
     switch(class(object),
            DESeqDataSet = { # Has been normalized with DESeq
                cds <- object

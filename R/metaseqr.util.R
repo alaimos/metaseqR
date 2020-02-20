@@ -124,7 +124,7 @@ get.defaults <- function(what,method=NULL) {
                     return(list(within.which="loess",between.which="full"))
                   },
                   deseq = {
-                    return(list(locfunc=median))
+                    return(list(locfunc=stats::median))
                   },
                   edger = {
                     return(list(
