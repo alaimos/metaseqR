@@ -140,7 +140,7 @@ normalize.deseq <- function(gene.counts,sample.list,norm.args=NULL,
     cds <- newCountDataSet(gene.counts,classes)
     cds <- estimateSizeFactors(cds, locfunc=norm.args$locfunc)
     if (output=="native")
-        return(cds) # Class: CountDataSet
+        return(cds) # Class: DESeqDataSet
     else if (output=="matrix")
         return(round(counts(cds,normalized=TRUE))) # Class: matrix
 }

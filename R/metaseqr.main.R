@@ -2106,7 +2106,7 @@ metaseqr <- function(
         )
         
         switch(class(norm.genes),
-               CountDataSet = { # Has been normalized with DESeq
+               DESeqDataSet = { # Has been normalized with DESeq
                    temp.matrix <- round(counts(norm.genes,normalized=TRUE))
                },
                DGEList = { # Has been normalized with edgeR
@@ -2168,7 +2168,7 @@ metaseqr <- function(
             # Now filter
             the.dead.ind <- match(the.dead,rownames(temp.matrix))
             switch(class(norm.genes),
-                   CountDataSet = {
+                   DESeqDataSet = {
                        norm.genes.expr <- norm.genes[-the.dead.ind,]
                    },
                    DGEList = { # edgeR bug???
@@ -2343,7 +2343,7 @@ metaseqr <- function(
     # At this point, all method-specific objects must become matrices for exporting 
     # and plotting
     switch(class(norm.genes.expr),
-           CountDataSet = { # Has been processed with DESeq
+           DESeqDataSet = { # Has been processed with DESeq
                norm.genes <- round(counts(norm.genes,normalized=TRUE))
                norm.genes.expr <- round(counts(norm.genes.expr,normalized=TRUE))
            },

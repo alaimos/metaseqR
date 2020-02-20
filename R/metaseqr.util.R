@@ -149,8 +149,7 @@ get.defaults <- function(what,method=NULL) {
          statistics = {
            switch(method,
                   deseq = {
-                    return(list(method="blind",sharingMode="fit-only",
-                                fitType="local"))
+                    return(list(fitType="parametric"))
                   },
                   edger = {
                     return(list(
@@ -3258,10 +3257,17 @@ metaseqR.version <- function() {
 #    return(ann)
 #}
 
+### Functions by S. Alaimo
 custom.p.adjust <- function (p, m) {
   if (m == "qvalue") {
     return (qvalue(p)$qvalues)
   } else {
     return (p.adjust(p, m))
   }
+}
+
+build.deseq.dds <- function (count, conditions, cond.names=names(conditions)) {
+  return (DESeqDataSetFromMatrix(countData = count,
+                                 colData = data.frame(condition=conditions, row.names = cond.names),
+                                 design = ~ condition))
 }
