@@ -145,7 +145,7 @@
                 if (trans.level=="gene") {
                   if (count.type=="exon") cat("an exon ")
                   else if (count.type=="gene") cat("a gene ")
-                  else if (count.type=="utr")cat("a 3'UTR ")
+                  else if (count.type=="utr") cat("a 3'UTR ")
                 } else if (trans.level=="transcript") {
                   if (count.type=="exon") cat("an exon ")
                   else if (count.type=="utr") cat("a 3'UTR ")
@@ -431,7 +431,7 @@
                       cat("<ul>")
                       for (sa in names(stat.args[[s]])) {
                         if (length(stat.args[[s]][[sa]])==1 && is.function(stat.args[[s]][[sa]]))
-                          cat("<li>",sa,": ",as.character(substitute(stat.args[[na]])),"</li>",sep="")
+                          cat("<li>",sa,": ",as.character(substitute(stat.args[[s]][[sa]] )),"</li>",sep="")
                         else if (length(stat.args[[s]][[sa]])==1)
                           cat("<li>",paste(sa,stat.args[[s]][[sa]],sep=": "),"</li>")
                         else if (length(stat.args[[s]][[sa]])>1)

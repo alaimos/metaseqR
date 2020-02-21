@@ -2872,8 +2872,6 @@ metaseqr <- function(
             TEMP <- environment()
             brew(
                 file=report.template$html,
-                #output=file.path(PROJECT.PATH$main,paste(
-                #    basename(PROJECT.PATH$main),"html",sep=".")),
                 output=file.path(PROJECT.PATH$main,"index.html"),
                 envir=TEMP
             )
