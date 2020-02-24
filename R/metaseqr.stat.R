@@ -54,46 +54,47 @@ stat.deseq <- function(object,sample.list,contrast.list=NULL,stat.args=NULL) {
     else {
         fitType.disp <- stat.args$fitType
     }
-    disp("")
-    switch(class(object),
-           DESeqDataSet = { # Has been normalized with DESeq
-               cds <- object
-               cds <- estimateDispersions(cds, fitType=fitType.disp)
-           },
-           DGEList = { # Has been normalized with edgeR
-               # Trick found at http://cgrlucb.wikispaces.com/edgeR+spring2013
-               scl <- object$samples$lib.size * object$samples$norm.factors
-               cds <- build.deseq.dds(round(t(t(object$counts)/scl)*mean(scl)), 
-                                      the.design$condition, rownames(the.design))
-               sizeFactors(cds) <- rep(1,ncol(cds))
-               cds <- estimateDispersions(cds)
-           },
-           matrix = { # Has been normalized with EDASeq or NOISeq
-               cds <- build.deseq.dds(object, the.design$condition, rownames(the.design))
-               sizeFactors(cds) <- rep(1,ncol(cds))
-               cds <- estimateDispersions(cds)
-           },
-           list = { # Has been normalized with NBPSeq and main method was "nbpseq"
-               cds <- build.deseq.dds(as.matrix(round(sweep(object$counts,2,
-                                                            object$norm.factors,"*"))), 
-                                      the.design$condition, rownames(the.design))
-               sizeFactors(cds) <- rep(1,ncol(cds))
-               cds <- estimateDispersions(cds)
-           },
-           nbp = { # Has been normalized with NBPSeq and main method was "nbsmyth"...
-               cds <- build.deseq.dds(as.matrix(round(object$pseudo.counts)), 
-                                      the.design$condition, rownames(the.design))
-               sizeFactors(cds) <- rep(1,ncol(cds))
-               cds <- estimateDispersions(cds)
-           }
-    )
+    suppressMessages({
+        switch(class(object),
+               DESeqDataSet = { # Has been normalized with DESeq
+                   cds <- object
+                   cds <- estimateDispersions(cds, fitType=fitType.disp)
+               },
+               DGEList = { # Has been normalized with edgeR
+                   # Trick found at http://cgrlucb.wikispaces.com/edgeR+spring2013
+                   scl <- object$samples$lib.size * object$samples$norm.factors
+                   cds <- build.deseq.dds(round(t(t(object$counts)/scl)*mean(scl)), 
+                                          the.design$condition, rownames(the.design))
+                   sizeFactors(cds) <- rep(1,ncol(cds))
+                   cds <- estimateDispersions(cds)
+               },
+               matrix = { # Has been normalized with EDASeq or NOISeq
+                   cds <- build.deseq.dds(object, the.design$condition, rownames(the.design))
+                   sizeFactors(cds) <- rep(1,ncol(cds))
+                   cds <- estimateDispersions(cds)
+               },
+               list = { # Has been normalized with NBPSeq and main method was "nbpseq"
+                   cds <- build.deseq.dds(as.matrix(round(sweep(object$counts,2,
+                                                                object$norm.factors,"*"))), 
+                                          the.design$condition, rownames(the.design))
+                   sizeFactors(cds) <- rep(1,ncol(cds))
+                   cds <- estimateDispersions(cds)
+               },
+               nbp = { # Has been normalized with NBPSeq and main method was "nbsmyth"...
+                   cds <- build.deseq.dds(as.matrix(round(object$pseudo.counts)), 
+                                          the.design$condition, rownames(the.design))
+                   sizeFactors(cds) <- rep(1,ncol(cds))
+                   cds <- estimateDispersions(cds)
+               }
+        )
+    })
     for (con.name in names(contrast.list)) {
         disp("  Contrast: ", con.name)
         con <- contrast.list[[con.name]]
         cons <- unique(unlist(con))
         if (length(con)==2) {
             cds1 <- nbinomWaldTest(cds)
-            res  <- results(cds1, contrast = c("condition", cons[1], cons[2]))
+            res  <- results(cds1, contrast = c("condition", cons[2], cons[1]))
             p[[con.name]] <- res$pvalue
         } else {
             cc      <- names(unlist(con))
