@@ -1644,14 +1644,17 @@ make.avg.expression <- function(contrast,sample.list,data.matrix,log.offset=1) {
 #' the.cells <- make.html.cells(data.matrix)
 #'}
 make.html.cells <- function(mat,type="numeric",digits=3) {
-  if (type=="numeric")
-    tmp <- format(mat,digits=digits)
+  # if (type=="numeric")
+  #   tmp <- format(mat,digits=digits)
+  # else
+  #   tmp <- mat
+  
   #tmp <- formatC(mat,digits=digits,format="f")
-  else
-    tmp <- mat
-  if (!is.matrix(tmp)) tmp <- as.matrix(tmp)
-  tmp <- apply(tmp,c(1,2),function(x) paste("<td>",x,"</td>",sep=""))
-  return(tmp)
+  
+  # if (!is.matrix(tmp)) tmp <- as.matrix(tmp)
+  mat <- as.data.frame(mat)
+  # tmp <- apply(tmp,c(1,2),function(x) paste("<td>",x,"</td>",sep=""))
+  return(mat)
 }
 
 #' HTML report helper

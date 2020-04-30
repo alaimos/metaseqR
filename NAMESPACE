@@ -10,6 +10,12 @@ import(qvalue)
 import(brew)
 import(rjson)
 
+importFrom("rmarkdown", render)
+importFrom("DT", datatable)
+importFrom("DT", formatRound)
+importFrom("plotly", plot_ly)
+importFrom("plotly", layout)
+
 importFrom("vsn",vsn2)
 importFrom("vsn",predict)
 

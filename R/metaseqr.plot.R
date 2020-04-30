@@ -1450,8 +1450,7 @@ diagplot.volcano <- function(f,p,con=NULL,fcut=1,pcut=0.05,alt.names=NULL,
         pp <- p[-u]
         if (!is.null(alt.names))
             alt.names.neutral <- alt.names[-u]
-    }
-    else {
+    } else {
         ff <- f
         pp <- p
         if (!is.null(alt.names))
@@ -1482,8 +1481,7 @@ diagplot.volcano <- function(f,p,con=NULL,fcut=1,pcut=0.05,alt.names=NULL,
             xjust=1,yjust=0,box.lty=0,x.intersp=0.5,cex=0.8,text.font=2
         )
         graphics.close(output)
-    }
-    else {
+    } else {
         obj <- list(
             x=f,
             y=p,
@@ -1501,7 +1499,7 @@ diagplot.volcano <- function(f,p,con=NULL,fcut=1,pcut=0.05,alt.names=NULL,
         #json <- volcanoToJSON(obj)
         #fil <- file.path(path,paste("volcano_",con,".json",sep=""))
         #write(json,fil)
-        fil <- volcanoToJSON(obj)
+        fil <- volcanoToJSON(obj, ...)
     }
     return(fil)
 }

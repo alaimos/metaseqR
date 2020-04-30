@@ -1,0 +1,75 @@
+```{r volcano-code-{{n}}-{{contrast}}, include=FALSE}
+curr.n <- "{{n}}"
+curr.c <- "{{contrast}}"
+parse.name <- function (n) (paste(unlist(strsplit(n, "_vs_")), collapse = " vs "))
+fc <- log2(make.fold.change(curr.n,sample.list,norm.genes.expr,1))
+dt.obj <- metaseqR::diagplot.volcano(fc[,curr.c],sum.p.list[[curr.n]],curr.c,alt.names=gene.data.expr$gene_name,output="json",jl="plotly")
+xlim <- dt.obj$xlim
+ylim <- dt.obj$ylim
+pcut <- dt.obj$pcut
+fcut <- dt.obj$fcut
+if (!is.null(dt.obj$altnames)) alt.names <- dt.obj$altnames else alt.names <- names(dt.obj$x)
+dt <- data.frame(
+  x=unname(dt.obj$x), 
+  y=-log10(unname(dt.obj$y)),
+  id=names(dt.obj$x),
+  name=unname(alt.names), 
+  p=unname(dt.obj$y), 
+  row.names = names(dt.obj$x)
+)
+dt$color <- ""
+dt[dt$x <= -fcut, ]$color <- "Downregulated"
+dt[dt$x >=  fcut, ]$color <- "Upregulated"
+dt[dt$p >=  pcut, ]$color <- "Unregulated"
+dt$cl <- factor(dt$color)
+levels(dt$cl) <- list("Downregulated" = 0, "Unregulated" = 1, "Upregulated" = 2)
+unreg <- which(dt$color == "Unregulated")
+if (length(unreg) > 10000) {
+  dt <- dt[-unreg[10001:length(unreg)],]
+}
+```
+
+<div style="display: flex; align-items: center; justify-content: center;">
+```{r volcano-plot-{{n}}-{{contrast}}, message=FALSE, warning=FALSE}
+plot_ly(data = dt, 
+        x = ~ x, 
+        y = ~ y, 
+        type = "scatter",  
+        mode = "markers", 
+        color = ~ cl, 
+        colors = c("#008000", "black", "#ff0000"), 
+        marker = list(size = 3), 
+        hoverinfo = "text", 
+        text =~ paste0("Gene Id: ", id, "<br>",
+                      "Gene Name: ", name, "<br>", 
+                      "Log-FC: ", round(x, 4), "<br>", 
+                      "p-value: ", round(p, 4))
+) %>% layout(
+  xaxis = list(title = "Log<sub>2</sub> Fold change "), 
+  yaxis = list(title = "-log<sub>10</sub>(p-value)"), 
+  title = paste("Volcano Plot for", parse.name(curr.c)),
+  shapes = list(
+    list(type = "line", 
+         y0 =~ min(y), 
+         y1 =~ max(y), 
+         x0 = fcut, 
+         x1 = fcut, 
+         line = list(dash = "dot", width = 2)
+    ),
+    list(type = "line", 
+         y0 =~ min(y), 
+         y1 =~ max(y), 
+         x0 = -fcut, 
+         x1 = -fcut, 
+         line = list(dash = "dot", width = 2)),
+    list(type = "line", 
+         y0 = -log10(pcut), 
+         y1 = -log10(pcut), 
+         x0 =~ min(x), 
+         x1 =~ max(x), 
+         line = list(dash = "dot", width = 2))
+  )
+)
+```
+</div>
+

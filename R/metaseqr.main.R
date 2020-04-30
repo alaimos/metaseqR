@@ -2621,17 +2621,18 @@ metaseqr <- function(
             out[[cnt]] <- export
         if (report)
         {
-            the.html.header <- make.html.header(the.export$headers)
+            # the.html.header <- make.html.header(the.export$headers)
             if (!is.null(report.top)) {
                 topi <- ceiling(report.top*nrow(export.html))
-                the.html.rows <- make.html.rows(export.html[1:topi,])
+                the.html.rows <- export.html[1:topi,] # make.html.rows(export.html[1:topi,])
+            } else {
+                the.html.rows <- export.html # make.html.rows(export.html)
             }
-            else
-                the.html.rows <- make.html.rows(export.html)
-            the.html.body <- make.html.body(the.html.rows)
-            the.html.table <- make.html.table(the.html.body,the.html.header,
-                                              id=paste("table_",counter,sep=""))
-            html[[cnt]] <- the.html.table
+            colnames(the.html.rows) <- the.export$headers
+            # the.html.body <- make.html.body(the.html.rows)
+            # the.html.table <- make.html.table(the.html.body,the.html.header,
+            #                                   id=paste("table_",counter,sep=""))
+            html[[cnt]] <- the.html.rows # the.html.table
             counter <- counter+1
         }
         
@@ -2788,20 +2789,20 @@ metaseqr <- function(
             fig.raw <- fig.unorm <- fig.norm <- fig.stat <- fig.other <-
                 fig.venn <- NULL
         
-        if (tolower(report.template)=="default")
-        {
-            if (exists("TEMPLATE"))
-            {
+        if (tolower(report.template)=="default") {
+            if (exists("TEMPLATE")) {
                 report.template=list(
-                    html=file.path(TEMPLATE,"metaseqr_report.html"),
+                    html=file.path(TEMPLATE,"report_template.Rmd"),
+                    partial_table=file.path(TEMPLATE,"table_partial_template.Rmd"),
+                    partial_volcano=file.path(TEMPLATE,"volcano_partial_template.Rmd"),
+                    html_footer=file.path(TEMPLATE,"footer.html"),
                     css=file.path(TEMPLATE,"styles.css"),
                     js=file.path(TEMPLATE,"scripts.js"),
                     logo=file.path(TEMPLATE,"logo.png"),
                     loader=file.path(TEMPLATE,"loader.gif")
                 )
-            }
-            else
-                report.template=list(html=NULL,css=NULL,logo=NULL,js=NULL,loader=NULL)
+            } else
+                report.template=list(html=NULL,partial_table=NULL,partial_volcano=NULL,css=NULL,logo=NULL,js=NULL,loader=NULL)
         }
         
         if (!is.null(report.template$html))
@@ -2821,6 +2822,48 @@ metaseqr <- function(
         else
         {
             warnwrap(paste("The report option was enabled but no template ",
+                           "file is provided! The HTML report will NOT be generated."))
+            has.template <- FALSE
+        }
+        if (!is.null(report.template$partial_volcano)) {
+            if (file.exists(report.template$partial_volcano)) {
+                partial_volcano <- report.template$partial_volcano
+                has.template <- TRUE
+            } else {
+                warnwrap(paste("The partial file",report.template$partial_volcano,
+                               "was not ","found! The HTML report will NOT be generated."))
+                has.template <- FALSE
+            }
+        } else {
+            warnwrap(paste("The report option was enabled but no partial volcano",
+                           "file is provided! The HTML report will NOT be generated."))
+            has.template <- FALSE
+        }
+        if (!is.null(report.template$partial_table)) {
+            if (file.exists(report.template$partial_table)) {
+                partial_table <- report.template$partial_table
+                has.template <- TRUE
+            } else {
+                warnwrap(paste("The partial file",report.template$partial_table,
+                               "was not ","found! The HTML report will NOT be generated."))
+                has.template <- FALSE
+            }
+        } else {
+            warnwrap(paste("The report option was enabled but no partial table",
+                           "file is provided! The HTML report will NOT be generated."))
+            has.template <- FALSE
+        }
+        if (!is.null(report.template$html_footer)) {
+            if (file.exists(report.template$html_footer)) {
+                html_footer <- report.template$html_footer
+                has.template <- TRUE
+            } else {
+                warnwrap(paste("The partial file",report.template$html_footer,
+                               "was not ","found! The HTML report will NOT be generated."))
+                has.template <- FALSE
+            }
+        } else {
+            warnwrap(paste("The report option was enabled but no footer",
                            "file is provided! The HTML report will NOT be generated."))
             has.template <- FALSE
         }
@@ -2870,11 +2913,24 @@ metaseqr <- function(
         {
             exec.time <- elap2human(TB)
             TEMP <- environment()
-            brew(
-                file=report.template$html,
-                output=file.path(PROJECT.PATH$main,"index.html"),
-                envir=TEMP
+            output.file <- file.path(PROJECT.PATH$main,"index.html")
+            rmarkdown::render(
+                input = report.template$html,
+                output_file = basename(output.file),
+                output_dir = dirname(output.file),
+                output_options = list(self_contained=FALSE, lib_dir=paste0(dirname(output.file),"/libs"), includes=list(
+                    after_body=report.template$html_footer
+                )),
+                knit_root_dir = dirname(output.file),
+                envir = TEMP,
+                clean = TRUE,
+                quiet = TRUE
             )
+            # brew(
+            #     file=report.template$html,
+            #     output=file.path(PROJECT.PATH$main,"index.html"),
+            #     envir=TEMP
+            # )
             # return (list(
             #     file=report.template$html,
             #     output=file.path(PROJECT.PATH$main,"index.html"),

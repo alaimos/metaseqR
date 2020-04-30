@@ -1825,7 +1825,6 @@ volcanoToJSON <- function(obj,jl=c("highcharts")) {
     pp <- obj$user$unp
     alt.names.neutral <- obj$user$ualt
     con <- obj$user$con
-    
     switch(jl,
         highcharts = {
             if (is.null(alt.names))
@@ -2013,6 +2012,9 @@ volcanoToJSON <- function(obj,jl=c("highcharts")) {
                     )
                 )
             )
+        },
+        plotly = {
+            json <- obj
         }
     )
     return(json)

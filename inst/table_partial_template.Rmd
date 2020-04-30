@@ -1,0 +1,156 @@
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+curr.n <- "{{n}}"
+parsed.name <- (function (n) (paste(unlist(strsplit(n, "_vs_")), collapse = " vs ")))(curr.n)
+if (is.null(report.top)) {
+  top.text <- paste("all the statistically significant ",	trans.level,"s",sep="")
+} else {
+  top.text <- paste("the top ",round(100*report.top),"% statistically significant ",trans.level,"s (use the download links below the table to retrieve the whole list)",sep="")
+}
+```
+
+## `r parsed.name`
+
+The following table presents `r top.text` for the contrast **`r parsed.name`**. The fields of the table correspond to the requested features to be exported. The table can be searched using the search field on the top right.
+
+```{r, message=FALSE, warning=FALSE, results='asis'}
+ucfirst <- function(x) {
+  substr(x, 1, 1) <- toupper(substr(x, 1, 1))
+  return (x)
+}
+
+studlyfy <- function (s) {
+  return (sapply(strsplit(s, "_", fixed=TRUE), function (p) (paste0(sapply(p, ucfirst), collapse = " "))))
+}
+
+tbl <- html[[curr.n]]
+if (nrow(tbl) == 0) {
+  cat("**No results to display**\n\n")
+} else {
+  tbl$gc_content <- NULL
+  tbl$biotype <- NULL
+  samples       <- unname(unique(unlist(contrast.list[[curr.n]])))
+  excluded      <- grep("raw(_[a-z]+)?_(counts|fold_change)", colnames(tbl), perl = TRUE)
+  if (length(excluded) > 0) {
+    tbl           <- tbl[,-excluded]
+  }
+  colnames(tbl) <- gsub("normalized_", "", colnames(tbl))
+  columns            <- colnames(tbl)
+  columns.contrast   <- grep(curr.n, columns)
+  columns.by.samples <- setNames(lapply(samples, function(x) {
+    cs <- grep(x, columns)
+    return (cs[!(cs %in% columns.contrast)])
+  }), samples)
+  columns.pvalue     <- grep('^p\\-value', columns, perl = TRUE)
+  columns.FDR        <- grep('^FDR', columns, perl = TRUE)
+  other.columns      <- (1:ncol(tbl))[-c(unlist(columns.by.samples),columns.contrast, columns.pvalue, columns.FDR)]
+  sorted.columns     <- c(other.columns, columns.pvalue, columns.FDR, columns.contrast, unname(unlist(columns.by.samples)))
+  tbl                <- tbl[, sorted.columns]
+  columns            <- colnames(tbl)
+  columns.contrast   <- grep(curr.n, columns)
+  columns.by.samples <- setNames(lapply(samples, function(x) {
+    cs <- grep(x, columns)
+    return (cs[!(cs %in% columns.contrast)])
+  }), samples)
+  columns.pvalue     <- grep('^p\\-value', columns, perl = TRUE)
+  columns.FDR        <- grep('^FDR', columns, perl = TRUE)
+  other.columns      <- (1:ncol(tbl))[-c(unlist(columns.by.samples),columns.contrast, columns.pvalue, columns.FDR)]
+  first.row <- c(lapply(other.columns, function (i) {
+    return (list(
+      colspan = 1,
+      rowspan = 2,
+      studlyfy(columns[i])
+    ))
+  }), list(
+    list(
+      colspan = length(columns.pvalue),
+      rowspan = ifelse(length(columns.pvalue) == 1, 2, 1),
+      style = ifelse(length(columns.pvalue) == 1, "", "text-align: center;"),
+      "p-value"
+    ),
+    list(
+      colspan = length(columns.FDR),
+      rowspan = ifelse(length(columns.FDR) == 1, 2, 1),
+      style = ifelse(length(columns.FDR) == 1, "", "text-align: center;"),
+      "FDR"
+    ),
+    list(
+      colspan = length(columns.contrast),
+      rowspan = ifelse(length(columns.contrast) == 1, 2, 1),
+      style = ifelse(length(columns.contrast) == 1, "", "text-align: center;"),
+      parsed.name
+    )
+  ), lapply(names(columns.by.samples), function (s) {
+    return (list(
+      colspan = length(columns.by.samples[[s]]),
+      rowspan = 1,
+      style = "text-align: center;",
+      s
+    ))
+  }))
+  second.row <- list()
+  if (length(columns.pvalue) > 1) {
+    second.row <- c(second.row, lapply(columns.pvalue, function (cc) {
+      return (list(
+        colspan = 1,
+        rowspan = 1,
+        gsub("p-value_", "", columns[cc])
+      ))
+    }))
+  }
+  if (length(columns.FDR) > 1) {
+    second.row <- c(second.row, lapply(columns.FDR, function (cc) {
+      return (list(
+        colspan = 1,
+        rowspan = 1,
+        gsub("FDR_", "", columns[cc])
+      ))
+    }))
+  }
+  second.row <- c(second.row, lapply(columns.contrast, function (cc) {
+    return (list(
+      colspan = 1,
+      rowspan = 1,
+      studlyfy(gsub(paste0("_", curr.n), "", columns[cc]))
+    ))
+  }))
+  second.row <- c(second.row, unlist(lapply(names(columns.by.samples), function (s) (lapply(columns.by.samples[[s]], function (cc) {
+    return (list(
+      colspan = 1,
+      rowspan = 1,
+      studlyfy(gsub(paste0("_", s), "", columns[cc]))
+    ))
+  }))), recursive = FALSE))
+  exclude.numeric <- c("start", "end", "length")
+  numeric.columns <- columns[sapply(columns, function (x) (is.numeric(tbl[[x]])))]
+  numeric.columns <- numeric.columns[!(numeric.columns %in% exclude.numeric)]
+  sketch = htmltools::withTags(table(
+    class = 'table-bordered table-condensed',
+    thead(
+      tr(
+        lapply(first.row, function(r) (do.call(th, r)))
+      ),
+      tr(
+        lapply(second.row, function(r) (do.call(th, r)))
+      )
+    )
+  ))
+  suppressWarnings(
+    datatable(tbl, 
+              options = list(
+                pageLength = 10
+              ), container = sketch, rownames = FALSE, style = "bootstrap") %>% 
+      formatRound(numeric.columns, digits=4) %>%
+      formatRound(exclude.numeric, digits=0)
+  )
+}
+```
+
+**[Download](`r paste0("lists/metaseqr_sig_out_",curr.n,".txt.gz")`) the DEG result list for `r parsed.name`.**
+
+```{r, results='asis'}
+if (!is.null(gene.counts.zero) || !is.null(gene.counts.dead)) {
+  cat("**[Download](lists/metaseqr_all_out_",curr.n,".txt.gz) the whole result list for ",parsed.name,".**\n\n",sep="")
+}
+```
+

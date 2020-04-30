@@ -21,6 +21,9 @@ Imports:
     gplots,
     corrplot,
     vsn,
+    rmarkdown,
+    DT,
+    plotly,
     brew,
     rjson,
     log4r
