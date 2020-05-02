@@ -23,7 +23,7 @@ dt[dt$x >=  fcut, ]$color <- "Upregulated"
 dt[dt$p >=  pcut, ]$color <- "Unregulated"
 dt$cl <- factor(dt$color)
 levels(dt$cl) <- list("Downregulated" = 0, "Unregulated" = 1, "Upregulated" = 2)
-unreg <- which(dt$color == "Unregulated")
+unreg <- which(dt$color == "Unregulated" & dt$p >= pcut)
 if (length(unreg) > 10000) {
   dt <- dt[-unreg[10001:length(unreg)],]
 }
