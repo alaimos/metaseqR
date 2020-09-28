@@ -223,7 +223,7 @@ diagplot.metaseqr <- function(object,sample.list,annotation=NULL,contrast.list=N
                     mat <- as.matrix(object[,match(samples,colnames(object))])
                     switch(p,
                            deheatmap = {
-                               files$deheatmap[[cnt]] <- diagplot.de.heatmap(mat,cnt,
+                                       files$deheatmap[[cnt]] <- diagplot.de.heatmap(mat[p.list[[cnt]] < thresholds$p,],cnt,
                                                                              output=output,path=path)
                            },
                            volcano = {
