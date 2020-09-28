@@ -3040,7 +3040,7 @@ set.arg <- function(arg.list,arg.name,arg.value=NULL) {
 #' @author Panagiotis Moulos
 wp.adjust <- function(p,m) {
   if (m=="qvalue")
-    return(qvalue(p))
+    return(tryCatch(qvalue(p), error=function(e)(p.adjust(p, method="fdr"))))
   else
     return(p.adjust(p,method=m))
 }
@@ -3264,7 +3264,7 @@ metaseqR.version <- function() {
 ### Functions by S. Alaimo
 custom.p.adjust <- function (p, m) {
   if (m == "qvalue") {
-    return (qvalue(p)$qvalues)
+    return(tryCatch(qvalue(p)$qvalues, error=function(e)(p.adjust(p, method="fdr"))))
   } else {
     return (p.adjust(p, m))
   }

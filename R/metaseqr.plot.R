@@ -140,135 +140,139 @@ diagplot.metaseqr <- function(object,sample.list,annotation=NULL,contrast.list=N
 
     for (p in diagplot.type) {
         disp("  Plotting ",p,"...")
-        if (p %in% raw.plots && !is.norm) {
-            switch(p,
-                mds = {
-                    files$mds <- diagplot.mds(object,sample.list,output=output,
-                        path=path)
-                },
-                biodetection = {
-                    files$biodetection <- diagplot.noiseq(object,sample.list,
-                        covars,which.plot=p,output=output,path=path,...)
-                },
-                countsbio = {
-                    files$countsbio <- diagplot.noiseq(object,sample.list,
-                        covars,which.plot=p,output=output,path=path,...)
-                },
-                saturation = {
-                    fil <- diagplot.noiseq(object,sample.list,covars,
-                        which.plot=p,output=output,path=path,...)
-                    files$saturation$biotype <- fil[["biotype"]]
-                    files$saturation$sample <- fil[["sample"]]
-                },
-                readnoise = {
-                    files$readnoise <- diagplot.noiseq(object,sample.list,
-                        covars,which.plot=p,output=output,path=path,...)
-                },
-                correl = {
-                    files$correl$heatmap <- diagplot.cor(object,type="heatmap",
-                        output=output,path=path,...)
-                    files$correl$correlogram <- diagplot.cor(object,
-                        type="correlogram",output=output,path=path,...)
-                },
-                pairwise = {
-                    files$pairwise <- diagplot.pairs(object,output=output,
-                        path=path)
-                }
-            )
-        }
-        if (p %in% norm.plots) {
-            switch(p,
-                boxplot = {
-                    files$boxplot <- diagplot.boxplot(object,name=sample.list,
-                        is.norm=is.norm,output=output,path=path,...)
-                },
-                gcbias = {
-                    files$gcbias <- diagplot.edaseq(object,sample.list,
-                        covar=annotation$gc_content,is.norm=is.norm,
-                        which.plot=p,output=output,path=path,...)
-                },
-                lengthbias = {
-                    files$lengthbias <- diagplot.edaseq(object,sample.list,
-                        covar=annotation$end-annotation$start,is.norm=is.norm,
-                        which.plot=p,output=output,path=path,...)
-                },
-                meandiff = {
-                    fil <- diagplot.edaseq(object,sample.list,is.norm=is.norm,
-                        which.plot=p,output=output,path=path,...)
-                    for (n in names(fil)) {
-                        if (!is.null(fil[[n]]))
-                            files$meandiff[[n]] <- unlist(fil[[n]])
-                    }
-                },
-                meanvar = {
-                    fil <- diagplot.edaseq(object,sample.list,is.norm=is.norm,
-                        which.plot=p,output=output,path=path,...)
-                    for (n in names(fil)) {
-                        if (!is.null(fil[[n]]))
-                            files$meanvar[[n]] <- unlist(fil[[n]])
-                    }
-                },
-                rnacomp = {
-                    files$rnacomp <- diagplot.noiseq(object,sample.list,covars,
-                        which.plot=p,output=output,is.norm=is.norm,path=path,
-                        ...)
-                }
-            )
-        }
-        if (p %in% stat.plots && is.norm) {
-            for (cnt in names(contrast.list)) {
-            disp("  Contrast: ",cnt)                
-                samples <- names(unlist(contrast.list[[cnt]]))
-                mat <- as.matrix(object[,match(samples,colnames(object))])
+        tryCatch({
+            if (p %in% raw.plots && !is.norm) {
                 switch(p,
-                    deheatmap = {
-                        files$deheatmap[[cnt]] <- diagplot.de.heatmap(mat,cnt,
-                            output=output,path=path)
-                    },
-                    volcano = {
-                        fc <- log2(make.fold.change(cnt,sample.list,object,1))
-                        for (contrast in colnames(fc)) {
-                            files$volcano[[contrast]] <- diagplot.volcano(
-                                fc[,contrast],p.list[[cnt]],contrast,
-                                fcut=thresholds$f,pcut=thresholds$p,
-                                output=output,path=path)
-                        }
-                    },
-                    biodist = {
-                        files$biodist[[cnt]] <- diagplot.noiseq(object,
-                            sample.list,covars,which.plot=p,output=output,
-                            biodist.opts=list(p=p.list[[cnt]],
-                            pcut=thresholds$p,name=cnt),path=path,...)
-                    }
+                       mds = {
+                           files$mds <- diagplot.mds(object,sample.list,output=output,
+                                                     path=path)
+                       },
+                       biodetection = {
+                           files$biodetection <- diagplot.noiseq(object,sample.list,
+                                                                 covars,which.plot=p,output=output,path=path,...)
+                       },
+                       countsbio = {
+                           files$countsbio <- diagplot.noiseq(object,sample.list,
+                                                              covars,which.plot=p,output=output,path=path,...)
+                       },
+                       saturation = {
+                           fil <- diagplot.noiseq(object,sample.list,covars,
+                                                  which.plot=p,output=output,path=path,...)
+                           files$saturation$biotype <- fil[["biotype"]]
+                           files$saturation$sample <- fil[["sample"]]
+                       },
+                       readnoise = {
+                           files$readnoise <- diagplot.noiseq(object,sample.list,
+                                                              covars,which.plot=p,output=output,path=path,...)
+                       },
+                       correl = {
+                           files$correl$heatmap <- diagplot.cor(object,type="heatmap",
+                                                                output=output,path=path,...)
+                           files$correl$correlogram <- diagplot.cor(object,
+                                                                    type="correlogram",output=output,path=path,...)
+                       },
+                       pairwise = {
+                           files$pairwise <- diagplot.pairs(object,output=output,
+                                                            path=path)
+                       }
                 )
             }
-        }
-        if (p %in% other.plots) {
-            switch(p,
-                filtered = {
-                    files$filtered <- diagplot.filtered(object,annotation,
-                        output=output,path=path)
+            if (p %in% norm.plots) {
+                switch(p,
+                       boxplot = {
+                           files$boxplot <- diagplot.boxplot(object,name=sample.list,
+                                                             is.norm=is.norm,output=output,path=path,...)
+                       },
+                       gcbias = {
+                           files$gcbias <- diagplot.edaseq(object,sample.list,
+                                                           covar=annotation$gc_content,is.norm=is.norm,
+                                                           which.plot=p,output=output,path=path,...)
+                       },
+                       lengthbias = {
+                           files$lengthbias <- diagplot.edaseq(object,sample.list,
+                                                               covar=annotation$end-annotation$start,is.norm=is.norm,
+                                                               which.plot=p,output=output,path=path,...)
+                       },
+                       meandiff = {
+                           fil <- diagplot.edaseq(object,sample.list,is.norm=is.norm,
+                                                  which.plot=p,output=output,path=path,...)
+                           for (n in names(fil)) {
+                               if (!is.null(fil[[n]]))
+                                   files$meandiff[[n]] <- unlist(fil[[n]])
+                           }
+                       },
+                       meanvar = {
+                           fil <- diagplot.edaseq(object,sample.list,is.norm=is.norm,
+                                                  which.plot=p,output=output,path=path,...)
+                           for (n in names(fil)) {
+                               if (!is.null(fil[[n]]))
+                                   files$meanvar[[n]] <- unlist(fil[[n]])
+                           }
+                       },
+                       rnacomp = {
+                           files$rnacomp <- diagplot.noiseq(object,sample.list,covars,
+                                                            which.plot=p,output=output,is.norm=is.norm,path=path,
+                                                            ...)
+                       }
+                )
+            }
+            if (p %in% stat.plots && is.norm) {
+                for (cnt in names(contrast.list)) {
+                    disp("  Contrast: ",cnt)                
+                    samples <- names(unlist(contrast.list[[cnt]]))
+                    mat <- as.matrix(object[,match(samples,colnames(object))])
+                    switch(p,
+                           deheatmap = {
+                               files$deheatmap[[cnt]] <- diagplot.de.heatmap(mat,cnt,
+                                                                             output=output,path=path)
+                           },
+                           volcano = {
+                               fc <- log2(make.fold.change(cnt,sample.list,object,1))
+                               for (contrast in colnames(fc)) {
+                                   files$volcano[[contrast]] <- diagplot.volcano(
+                                       fc[,contrast],p.list[[cnt]],contrast,
+                                       fcut=thresholds$f,pcut=thresholds$p,
+                                       output=output,path=path)
+                               }
+                           },
+                           biodist = {
+                               files$biodist[[cnt]] <- diagplot.noiseq(object,
+                                                                       sample.list,covars,which.plot=p,output=output,
+                                                                       biodist.opts=list(p=p.list[[cnt]],
+                                                                                         pcut=thresholds$p,name=cnt),path=path,...)
+                           }
+                    )
                 }
-            )
-        }
-        if (p %in% venn.plots) {
-            switch(p,
-                venn = {
-                    for (cnt in names(contrast.list)) {
-                        disp("  Contrast: ",cnt)
-                        if (!is.null(annotation)) {
-                            alt.names <- as.character(annotation$gene_name)
-                            names(alt.names) <- rownames(annotation)
-                        }
-                        else
-                            alt.names <- NULL
-                        files$venn[[cnt]] <- diagplot.venn(p.list[[cnt]],
-                            pcut=thresholds$p,nam=cnt,output=output,path=path,
-                            alt.names=alt.names)
-                    }
-                }
-            )
-        }
+            }
+            if (p %in% other.plots) {
+                switch(p,
+                       filtered = {
+                           files$filtered <- diagplot.filtered(object,annotation,
+                                                               output=output,path=path)
+                       }
+                )
+            }
+            if (p %in% venn.plots) {
+                switch(p,
+                       venn = {
+                           for (cnt in names(contrast.list)) {
+                               disp("  Contrast: ",cnt)
+                               if (!is.null(annotation)) {
+                                   alt.names <- as.character(annotation$gene_name)
+                                   names(alt.names) <- rownames(annotation)
+                               }
+                               else
+                                   alt.names <- NULL
+                               files$venn[[cnt]] <- diagplot.venn(p.list[[cnt]],
+                                                                  pcut=thresholds$p,nam=cnt,output=output,path=path,
+                                                                  alt.names=alt.names)
+                           }
+                       }
+                )
+            }
+        }, error=function(e) {
+            disp("  Unable to plot ",p,": ",e,".")
+        })
     }
     
     return(files)
