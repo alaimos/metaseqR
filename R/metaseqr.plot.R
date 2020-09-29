@@ -228,7 +228,7 @@ diagplot.metaseqr <- function(object,sample.list,annotation=NULL,contrast.list=N
                                mat.flt <- mat[p.list[[cnt]] < thresholds$p,]
                                fc.flt  <- fc[rownames(fc) %in% rownames(mat.flt),cnt]
                                mat.flt <- mat.flt[rownames(mat.flt) %in% rownames(fc),]
-                               mat.flt <- head(mat.flt[order(abs(fc.flt)),], n=200)
+                               mat.flt <- head(mat.flt[order(abs(fc.flt)),], n=100)
                                files$deheatmap[[cnt]] <- diagplot.de.heatmap(mat.flt,cnt,output=output,path=path)
                            },
                            volcano = {
