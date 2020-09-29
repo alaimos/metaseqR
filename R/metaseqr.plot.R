@@ -223,13 +223,12 @@ diagplot.metaseqr <- function(object,sample.list,annotation=NULL,contrast.list=N
                     mat <- as.matrix(object[,match(samples,colnames(object))])
                     switch(p,
                            deheatmap = {
-                               ## By S.Alaimo print Top-50 upregulated and Top-50 downregulated
+                               ## By S.Alaimo print Top-100 DEGs
                                fc <- log2(make.fold.change(cnt,sample.list,object,1))
                                mat.flt <- mat[p.list[[cnt]] < thresholds$p,]
                                fc.flt  <- fc[rownames(fc) %in% rownames(mat.flt),cnt]
                                mat.flt <- mat.flt[rownames(mat.flt) %in% rownames(fc),]
-                               mat.flt <- mat.flt[order(fc.flt, decreasing = TRUE),]
-                               mat.flt <- mat.flt[unique(c(1:min(50,nrow(mat.flt)),max(1,nrow(mat.flt)-49):nrow(mat.flt))),]
+                               mat.flt <- head(mat.flt[order(abs(fc.flt)),], n=200)
                                files$deheatmap[[cnt]] <- diagplot.de.heatmap(mat.flt,cnt,output=output,path=path)
                            },
                            volcano = {
