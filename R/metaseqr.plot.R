@@ -223,8 +223,14 @@ diagplot.metaseqr <- function(object,sample.list,annotation=NULL,contrast.list=N
                     mat <- as.matrix(object[,match(samples,colnames(object))])
                     switch(p,
                            deheatmap = {
-                                       files$deheatmap[[cnt]] <- diagplot.de.heatmap(mat[p.list[[cnt]] < thresholds$p,],cnt,
-                                                                             output=output,path=path)
+                               ## By S.Alaimo print Top-50 upregulated and Top-50 downregulated
+                               fc <- log2(make.fold.change(cnt,sample.list,object,1))
+                               mat.flt <- mat[p.list[[cnt]] < thresholds$p,]
+                               fc.flt  <- fc[rownames(fc) %in% rownames(mat.flt),cnt]
+                               mat.flt <- mat.flt[rownames(mat.flt) %in% rownames(fc),]
+                               mat.flt <- mat.flt[order(fc.flt, decreasing = TRUE),]
+                               mat.flt <- mat.flt[unique(c(1:min(50,nrow(mat.flt)),max(1,nrow(mat.flt)-49):nrow(mat.flt))),]
+                               files$deheatmap[[cnt]] <- diagplot.de.heatmap(mat.flt,cnt,output=output,path=path)
                            },
                            volcano = {
                                fc <- log2(make.fold.change(cnt,sample.list,object,1))
@@ -1554,7 +1560,7 @@ diagplot.de.heatmap <- function(x,con=NULL,output="x11",path=NULL,...) {
     else
         graphics.open(output,fil,width=800,height=800)
     heatmap.2(y,trace="none",col=bluered(16),labRow="",cexCol=0.9,keysize=1,
-        font.lab=2,main=paste("DEG heatmap",con),cex.main=0.9)
+        font.lab=2,main=paste("Top 100 DEGs ",con),cex.main=0.9)
     graphics.close(output)
     ## Then the "interactive" using sendplot
     #xy.labels <- list(normalized_counts=x,log2_normalized_counts=y)
